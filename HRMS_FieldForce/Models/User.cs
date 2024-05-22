@@ -1,9 +1,35 @@
-﻿namespace HRMS_FieldForce.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HRMS_FieldForce.Models
 {
     public class User
     {
-        public string UserName { get; set; } = string.Empty;
+        [Key]
+        public required string UserId { get; set; }
 
-        public string PasswordHash { get; set; } = string.Empty;
+        [Required]
+        public required string HashPassword { get; set; }
+
+        [Required]
+        public required string FirstName { get; set; }
+
+        [Required]
+        public required string LastName { get; set; }
+
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        public required string Role { get; set; }
+
+        [EmailAddress]
+        [Required]
+        public required string PersonalEmail { get; set; }
+
+        [EmailAddress]
+        [Required]
+        public required string CompanyEmail { get; set; }
+
+
     }
 }
