@@ -1,0 +1,6 @@
+@HRMS_FieldForce_HostAddress = http://localhost:5022
+
+GET {{HRMS_FieldForce_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
