@@ -1,6 +1,8 @@
-﻿using HRMS_FieldForce.Models;
+﻿using HRMS_FieldForce.Data;
+using HRMS_FieldForce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,40 +16,67 @@ namespace HRMS_FieldForce.Controllers
     
     public class AuthController : ControllerBase
     {
-        public static User user = new User();
-
+        public static User? _user;
+        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-
-        public AuthController(IConfiguration configuration)
+         
+        
+        public AuthController(IConfiguration configuration, DataContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpPost("register")]
 
-        public ActionResult<User> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(UserDto request)
         {
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            user.UserName = request.Username;
-            user.PasswordHash = passwordHash;
+            var dbUser = await _context.Users.FindAsync(request.CompanyEmail);
 
-            return Ok(user);
+            if (dbUser is not null)
+            {
+                return BadRequest($"Team with id {dbUser.CompanyEmail} already exists.");
+            }
+
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            var _user = new User
+            {
+                CompanyEmail = request.CompanyEmail,
+                LastName = request.LastName,
+                FirstName = request.FirstName,
+                UserId = request.UserId,
+                Role = request.Role,
+                PersonalEmail = request.PersonalEmail,
+                DateOfBirth = request.DateOfBirth,
+                HashPassword = passwordHash
+            };
+
+            _context.Users.Add(_user);
+            await _context.SaveChangesAsync();
+
+
+            await _context.SaveChangesAsync();
+            return Ok("User Added Succfuly");
+
         }
 
         [HttpPost("login")]
 
-        public ActionResult<User> Login(UserDto request)
+        public async Task<ActionResult<User>> Login(LoginDTO request)
         {
-            if (user.UserName != request.Username)
+
+            var dbUser = await _context.Users.FindAsync(request.CompanyEmail);
+            if (dbUser is null)
             {
                 return BadRequest("User Name or Password is incorrect");
             }
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, dbUser.HashPassword))
             {
                 return BadRequest("User Name or Password is incorrect");
             }
 
-            var token = CreateToken(user);
+            var token = CreateToken(dbUser);
 
 
             return Ok(token);
@@ -60,7 +89,7 @@ namespace HRMS_FieldForce.Controllers
         {
             List<Claim> claims = new List<Claim> {
 
-            new Claim(ClaimTypes.Name,user.UserName)
+            new Claim(ClaimTypes.Role,user.Role)
 
             };
 
