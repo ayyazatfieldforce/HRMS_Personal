@@ -21,5 +21,25 @@ namespace HRMS_FieldForce.Controllers
             return Ok(user);
         }
 
+        [HttpPost("login")]
+
+        public ActionResult<User> Login(UserDto request)
+        {
+            if (user.UserName != request.Username)
+            {
+                return BadRequest("User Name or Password is incorrect");
+            }
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            {
+                return BadRequest("User Name or Password is incorrect");
+            }
+
+            return Ok(user);
+
+
+
+        }
+
+
     }
 }
