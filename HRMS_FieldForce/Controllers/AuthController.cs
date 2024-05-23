@@ -63,17 +63,18 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpPost("login")]
 
-        public async Task<ActionResult<User>> Login(LoginDTO request)
+        public async Task<ActionResult<string>> Login(LoginDTO request)
         {
 
-            var dbUser = await _context.Users.FindAsync(request.CompanyEmail);
+            var dbUser = await _context.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);
+
             if (dbUser is null)
             {
-                return BadRequest("User Name or Password is incorrect");
+                return BadRequest("Company Email or Password  is incorrect");
             }
             if (!BCrypt.Net.BCrypt.Verify(request.Password, dbUser.HashPassword))
             {
-                return BadRequest("User Name or Password is incorrect");
+                return BadRequest("Company Email or Password  is incorrect");
             }
 
             var token = CreateToken(dbUser);
