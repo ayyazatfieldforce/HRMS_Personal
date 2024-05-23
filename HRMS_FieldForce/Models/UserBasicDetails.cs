@@ -6,9 +6,13 @@ namespace HRMS_FieldForce.Models
     public class UserBasicDetails
     {
         [Key]
+        [Required]
         [ForeignKey("User")]
-        public required string UserId { get; set; }
-        public virtual User User { get; set; }
+        public string UserId { get; set; }
+
+
+        //[Key]
+        //public required string UserBasicDetailsID { get; set; }
 
         [Required]
         public required string WorkingHours { get; set; }
@@ -48,5 +52,9 @@ namespace HRMS_FieldForce.Models
 
         [Required]
         public required string Benefits { get; set; }
+
+
+        // Navigation property
+        public User? User { get; set; }
     }
 }

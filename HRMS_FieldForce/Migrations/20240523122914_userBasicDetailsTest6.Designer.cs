@@ -4,6 +4,7 @@ using HRMS_FieldForce.Models.DBcontext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    partial class UserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240523122914_userBasicDetailsTest6")]
+    partial class userBasicDetailsTest6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,6 +108,22 @@ namespace HRMS_FieldForce.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UserBasicDetails");
+                });
+
+            modelBuilder.Entity("HRMS_FieldForce.Models.UserBasicDetails", b =>
+                {
+                    b.HasOne("HRMS_FieldForce.Models.User", "User")
+                        .WithMany("userBasicDetails")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HRMS_FieldForce.Models.User", b =>
+                {
+                    b.Navigation("userBasicDetails");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,6 +4,7 @@ using HRMS_FieldForce.Models.DBcontext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    partial class UserDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240523121454_userBasicDetailsTest4")]
+    partial class userBasicDetailsTest4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,13 +101,33 @@ namespace HRMS_FieldForce.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("UserId1")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("WorkingHours")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("UserId1");
+
                     b.ToTable("UserBasicDetails");
+                });
+
+            modelBuilder.Entity("HRMS_FieldForce.Models.UserBasicDetails", b =>
+                {
+                    b.HasOne("HRMS_FieldForce.Models.User", null)
+                        .WithMany("userBasicDetails")
+                        .HasForeignKey("UserId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HRMS_FieldForce.Models.User", b =>
+                {
+                    b.Navigation("userBasicDetails");
                 });
 #pragma warning restore 612, 618
         }

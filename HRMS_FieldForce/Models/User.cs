@@ -30,21 +30,21 @@ namespace HRMS_FieldForce.Models
         [Required]
         public required string CompanyEmail { get; set; }
 
-        public virtual ICollection<UserBasicDetails> userBasicDetails { get; set; }
-        public User()
-        {
-        }
-        public User(string userId, string passwordHash, string firstName, string lastName, DateTime dateOfBirth, string role, string personalEmail, string companyEmail)
-        {
-            UserId = userId;
-            PasswordHash = passwordHash;
-            FirstName = firstName;
-            LastName = lastName;
-            DateOfBirth = dateOfBirth;
-            Role = role;
-            PersonalEmail = personalEmail;
-            CompanyEmail = companyEmail;
-        }
+        //public virtual ICollection<UserBasicDetails> userBasicDetails { get; set; }
+        //public User()
+        //{
+        //}
+        //public User(string userId, string passwordHash, string firstName, string lastName, DateTime dateOfBirth, string role, string personalEmail, string companyEmail)
+        //{
+        //    UserId = userId;
+        //    PasswordHash = passwordHash;
+        //    FirstName = firstName;
+        //    LastName = lastName;
+        //    DateOfBirth = dateOfBirth;
+        //    Role = role;
+        //    PersonalEmail = personalEmail;
+        //    CompanyEmail = companyEmail;
+        //}
 
     }
 }
