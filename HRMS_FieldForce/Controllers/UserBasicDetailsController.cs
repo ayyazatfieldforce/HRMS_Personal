@@ -1,5 +1,6 @@
 ﻿using HRMS_FieldForce.Models;
 using HRMS_FieldForce.Models.DBcontext;
+using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,39 +27,34 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpPost]
         [Route("AddUserBasicDetails")]
-        public async Task<UserBasicDetails> AddStudentDetails(UserBasicDetails request)
+        public async Task<ActionResult<UserBasicDetails>> AddUserBasicDetails(UserBasicDetailsDTO request)
         {
-            _UserDBContext.UserBasicDetails.Add(request);
+            var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
+
+            if (dbUser is null)
+            {
+                return BadRequest($"Team with id {request.UserId} does not exist.");
+            }
+
+            var UserBasicDetails = new UserBasicDetails
+            {
+                UserId = request.UserId,
+                WorkingHours = request.WorkingHours,
+                ReportingTo = request.ReportingTo,
+                MaritalStatus = request.MaritalStatus,
+                DateOfBirth = request.DateOfBirth,
+                ExperienceInFieldForce = request.ExperienceInFieldForce,
+                TotalExperience = request.TotalExperience,
+                AccountNo = request.AccountNo,
+                EOBI = request.EOBI,
+                GrossSalary = request.GrossSalary,
+                Benefits = request.Benefits
+            };
+            _UserDBContext.UserBasicDetails.Add(UserBasicDetails);
             await _UserDBContext.SaveChangesAsync();
-            return request;
+            return Ok(UserBasicDetails);
         }
 
-        [HttpPatch]
-        [Route("UpdateUserBasicDetails/(id)")]
-        public async Task<UserBasicDetails> UpdateStudentDetails(UserBasicDetails request)
-        {
-            _UserDBContext.Entry(request).State = EntityState.Modified;
-            await _UserDBContext.SaveChangesAsync();
-            return request;
-        }
-
-        [HttpDelete]
-        [Route("DeleteUserBasicDetails/(id)")]
-        public bool DeleteStudentDetails(int id)
-        {
-            bool isDeleted = false;
-            var stu = _UserDBContext.UserBasicDetails.Find(id);
-            if (stu != null)
-            {
-                isDeleted = true;
-                _UserDBContext.Entry(stu).State = EntityState.Deleted;
-                _UserDBContext.SaveChangesAsync();
-            }
-            else
-            {
-                isDeleted = false;
-            }
-            return isDeleted;
-        }
+        
     }
 }
