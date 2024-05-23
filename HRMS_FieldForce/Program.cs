@@ -1,4 +1,4 @@
-using HRMS_FieldForce.Models;
+using HRMS_FieldForce.Models.DBcontext;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

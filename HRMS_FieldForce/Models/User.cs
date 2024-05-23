@@ -29,6 +29,8 @@ namespace HRMS_FieldForce.Models
         [EmailAddress]
         [Required]
         public required string CompanyEmail { get; set; }
+
+        public virtual ICollection<UserBasicDetails> userBasicDetails { get; set; }
         public User()
         {
         }

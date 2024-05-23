@@ -1,4 +1,4 @@
-﻿namespace HRMS_FieldForce.Models
+﻿namespace HRMS_FieldForce.Models.DTOs
 {
     public class UserDTOLogin
     {

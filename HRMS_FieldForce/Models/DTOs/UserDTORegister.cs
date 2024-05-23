@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HRMS_FieldForce.Models
+namespace HRMS_FieldForce.Models.DTOs
 {
     public class UserDTORegister
     {

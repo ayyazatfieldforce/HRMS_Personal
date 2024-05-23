@@ -1,5 +1,7 @@
 ﻿using BCrypt.Net;
 using HRMS_FieldForce.Models;
+using HRMS_FieldForce.Models.DBcontext;
+using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
