@@ -7,5 +7,7 @@ namespace HRMS_FieldForce.Controllers
     [ApiController]
     public class AttendanceController : ControllerBase
     {
+
+
     }
 }
