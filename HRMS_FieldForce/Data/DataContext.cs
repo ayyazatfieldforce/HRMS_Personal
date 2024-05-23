@@ -13,6 +13,7 @@ namespace HRMS_FieldForce.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserPersonalDetail> UserPersonalDetails { get; set; }
+        public DbSet<UserBasicDetail> UserBasicDetails { get; set; }
 
         //public DbSet<Attendance> Attendances { get; set; }
 
