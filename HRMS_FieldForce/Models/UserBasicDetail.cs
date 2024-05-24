@@ -7,6 +7,7 @@ namespace HRMS_FieldForce.Models
     {
 
         [Key]
+        [Required]
         [ForeignKey("User")]
         public required string UserId { get; set; }
 
@@ -49,6 +50,8 @@ namespace HRMS_FieldForce.Models
         [Required]
         public required string Benefits { get; set; }
 
+
+        // Navigation property
         public User? User { get; set; }
     }
 }
