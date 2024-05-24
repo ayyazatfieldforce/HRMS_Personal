@@ -8,11 +8,7 @@ namespace HRMS_FieldForce.Models
         [Key]
         [Required]
         [ForeignKey("User")]
-        public string UserId { get; set; }
-
-
-        //[Key]
-        //public required string UserBasicDetailsID { get; set; }
+        public required string UserId { get; set; }
 
         [Required]
         public required string WorkingHours { get; set; }

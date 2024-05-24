@@ -6,15 +6,15 @@ namespace HRMS_FieldForce.Models.DTOs
     public class UserBasicDetailsDTO
     {
         public required string UserId { get; set; }
-        public required string WorkingHours { get; set; }
-        public required string ReportingTo { get; set; }
-        public required string MaritalStatus { get; set; }
-        public required DateTime DateOfBirth { get; set; }
-        public required string ExperienceInFieldForce { get; set; }
-        public required string TotalExperience { get; set; }
-        public required string AccountNo { get; set; }
-        public required string EOBI { get; set; }
+        public required string WorkingHours { get; set; } = string.Empty;
+        public required string ReportingTo { get; set; } = string.Empty;
+        public required string MaritalStatus { get; set; } = string.Empty;
+        public required DateTime DateOfBirth { get; set; } 
+        public required string ExperienceInFieldForce { get; set; } = string.Empty;
+        public required string TotalExperience { get; set; } = string.Empty;
+        public required string AccountNo { get; set; } = string.Empty;
+        public required string EOBI { get; set; } = string.Empty;
         public required decimal GrossSalary { get; set; }
-        public required string Benefits { get; set; }
+        public required string Benefits { get; set; } = string.Empty;
     }
 }

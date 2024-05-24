@@ -33,7 +33,7 @@ namespace HRMS_FieldForce.Controllers
 
             if (dbUser is null)
             {
-                return BadRequest($"Team with id {request.UserId} does not exist.");
+                return BadRequest($"User with id {request.UserId} does not exist.");
             }
 
             var UserBasicDetails = new UserBasicDetails
@@ -55,6 +55,54 @@ namespace HRMS_FieldForce.Controllers
             return Ok(UserBasicDetails);
         }
 
-        
+        [HttpPatch]
+        [Route("UpdateUserBasicDetails/(id)")]
+        public async Task<ActionResult<UserBasicDetails>> UpdateUserBasicDetails(UserBasicDetailsDTO request)
+        {
+            var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
+
+            if (dbUser is null)
+            {
+                return BadRequest($"User with id {request.UserId} does not exist.");
+            }
+
+            var UserBasicDetails = new UserBasicDetails
+            {
+                UserId = request.UserId,
+                WorkingHours = request.WorkingHours,
+                ReportingTo = request.ReportingTo,
+                MaritalStatus = request.MaritalStatus,
+                DateOfBirth = request.DateOfBirth,
+                ExperienceInFieldForce = request.ExperienceInFieldForce,
+                TotalExperience = request.TotalExperience,
+                AccountNo = request.AccountNo,
+                EOBI = request.EOBI,
+                GrossSalary = request.GrossSalary,
+                Benefits = request.Benefits
+            };
+
+            _UserDBContext.Entry(UserBasicDetails).State = EntityState.Modified;
+            await _UserDBContext.SaveChangesAsync();
+            return Ok(UserBasicDetails);
+        }
+
+        [HttpDelete]
+        [Route("DeleteUserBasicDetails/(id)")]
+        public bool DeleteUserBasicDetails(string id)
+        {
+            bool isDeleted = false;
+            var userToDelete = _UserDBContext.UserBasicDetails.Find(id);
+            if (userToDelete != null)
+            {
+                isDeleted = true;
+                _UserDBContext.Entry(userToDelete).State = EntityState.Deleted;
+                _UserDBContext.SaveChangesAsync();
+            }
+            else
+            {
+                isDeleted = false;
+            }
+            return isDeleted;
+        }
     }
 }
