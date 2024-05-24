@@ -19,11 +19,30 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserBasicDetails")]
-        public async Task<IEnumerable<UserBasicDetails>> GetUserDetails()
+        public async Task<ActionResult<UserBasicDetails>> GetUserDetails([FromQuery] string? id)
         {
-            return await _UserDBContext.UserBasicDetails.ToListAsync();
+            if (string.IsNullOrEmpty(id))
+            {
+                var UserBasicDetails = await _UserDBContext.UserBasicDetails.ToListAsync();
+                return Ok(UserBasicDetails);
+            }
+            else
+            {
+                var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
+                if (userDetail is null)
+                {
+                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                }
+                return Ok(userDetail);
+            }
         }
+
+        //[HttpGet]
+        //[Route("GetUserBasicDetails")]
+        //public async Task<IEnumerable<UserBasicDetails>> GetUserDetails()
+        //{
+        //    return await _UserDBContext.UserBasicDetails.ToListAsync();
+        //}
 
         [HttpPost]
         [Route("AddUserBasicDetails")]
