@@ -1,4 +1,5 @@
 ﻿using HRMS_FieldForce.Data;
+using HRMS_FieldForce.DTOs;
 using HRMS_FieldForce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -132,8 +133,27 @@ namespace HRMS_FieldForce.Controllers
         {
             return _context.UserPersonalDetails.Any(e => e.UserId == id);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUserPersonalDetail(string id)
+        {
+            var userPersonalDetail = await _context.UserPersonalDetails.FindAsync(id);
+            if (userPersonalDetail == null)
+            {
+                return NotFound($"UserPersonalDetail with UserId {id} not found.");
+            }
+
+            _context.UserPersonalDetails.Remove(userPersonalDetail);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+      
+        }
+
+
     }
 
 
-
 }
+
+

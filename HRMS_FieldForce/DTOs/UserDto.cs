@@ -1,10 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace HRMS_FieldForce.Models
+namespace HRMS_FieldForce.DTOs
 {
     public class UserDto
     {
-       
+
         public required string UserId { get; set; }
 
         public required string Password { get; set; }
