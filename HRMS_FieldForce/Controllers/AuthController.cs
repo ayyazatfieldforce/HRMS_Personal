@@ -1,9 +1,13 @@
-﻿using HRMS_FieldForce.Data;
+using BCrypt.Net;
 using HRMS_FieldForce.Models;
+using HRMS_FieldForce.Models.DBcontext;
+using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,34 +16,26 @@ namespace HRMS_FieldForce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-    
     public class AuthController : ControllerBase
     {
-        public static User? _user;
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-         
-        
-        public AuthController(IConfiguration configuration, DataContext context)
+        private readonly UserDBContext _userDB;
+        public AuthController(IConfiguration configuration, UserDBContext userDBContext)
         {
             _configuration = configuration;
-            _context = context;
+            _userDB = userDBContext;
         }
 
         [HttpPost("register")]
-
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<ActionResult<User>> Register (UserDTORegister request)
         {
-            var dbUser = await _context.Users.FindAsync(request.CompanyEmail);
-
-            if (dbUser is not null)
+            var dbUser = await _userDB.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);
+            if (dbUser != null)
             {
-                return BadRequest($"Team with id {dbUser.CompanyEmail} already exists.");
+                return BadRequest("User already Exist");
             }
 
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
+            var PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             var _user = new User
             {
                 CompanyEmail = request.CompanyEmail,
@@ -49,68 +45,51 @@ namespace HRMS_FieldForce.Controllers
                 Role = request.Role,
                 PersonalEmail = request.PersonalEmail,
                 DateOfBirth = request.DateOfBirth,
-                HashPassword = passwordHash
+                PasswordHash = PasswordHash
             };
-
-            _context.Users.Add(_user);
-            await _context.SaveChangesAsync();
-
-
-            await _context.SaveChangesAsync();
-            return Ok("User Added Succfuly");
-
+            
+            _userDB.Users.Add(_user);
+            await _userDB.SaveChangesAsync();
+            return _user;
         }
 
         [HttpPost("login")]
-
-        public async Task<ActionResult<string>> Login(LoginDTO request)
+        public async Task<ActionResult<string>> Login (UserDTOLogin request)
         {
-
-            var dbUser = await _context.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);
-
-            if (dbUser is null)
+            var dbUser = await _userDB.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);
+            if (dbUser == null)
             {
-                return BadRequest("Company Email or Password  is incorrect");
+                return BadRequest("Username or Password is Wrong");
             }
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, dbUser.HashPassword))
+            if(!BCrypt.Net.BCrypt.Verify(request.Password, dbUser.PasswordHash))
             {
-                return BadRequest("Company Email or Password  is incorrect");
+                return BadRequest("Username or Password is Wrong");
             }
-
             var token = CreateToken(dbUser);
-
-
             return Ok(token);
-
-
-
         }
 
         private string CreateToken(User user)
         {
-            List<Claim> claims = new List<Claim> {
-
-            new Claim(ClaimTypes.Role,user.Role)
-
+            var key = _configuration.GetValue<string>("Appsettings:Token");
+            var keyBytes = Encoding.UTF8.GetBytes(key!);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                     {
+                     new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                     new Claim(ClaimTypes.Email, user.CompanyEmail),
+                     new Claim(ClaimTypes.Role, user.Role)
+                 }),
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                SigningCredentials = new SigningCredentials(
+                                      new SymmetricSecurityKey(keyBytes),
+                                      SecurityAlgorithms.HmacSha512Signature)
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials:creds
-                );  
-
-            var jwt=new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
-            
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
-
-
-
+        
     }
 }

@@ -1,6 +1,3 @@
-using HRMS_FieldForce.Data;
-using Microsoft.EntityFrameworkCore;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,13 +7,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-var ConnectionString = builder.Configuration.GetConnectionString("MySQLConnection");
-
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseMySql(ConnectionString, ServerVersion.AutoDetect(ConnectionString));
-});
+var connectionString = builder.Configuration.GetConnectionString("DevConnection");
+builder.Services.AddDbContext<UserDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 var app = builder.Build();
 
