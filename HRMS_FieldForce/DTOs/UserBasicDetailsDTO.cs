@@ -1,4 +1,4 @@
-﻿namespace HRMS_FieldForce.Models
+﻿namespace HRMS_FieldForce.DTOs
 {
     public class UserBasicDetailsDTO
     {
