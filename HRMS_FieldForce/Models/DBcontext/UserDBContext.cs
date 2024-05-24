@@ -11,6 +11,7 @@ namespace HRMS_FieldForce.Models.DBcontext
         public DbSet<User> Users { get; set; }
         public DbSet<UserBasicDetails> UserBasicDetails { get; set; }
         public DbSet<UserPersonalDetail> UserPersonalDetails { get; set; }
+        public DbSet<UserAttendance> UserAttendances { get; set; }
 
     }
 }

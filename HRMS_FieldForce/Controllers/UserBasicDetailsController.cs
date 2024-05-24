@@ -37,15 +37,8 @@ namespace HRMS_FieldForce.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetUserBasicDetails")]
-        //public async Task<IEnumerable<UserBasicDetails>> GetUserDetails()
-        //{
-        //    return await _UserDBContext.UserBasicDetails.ToListAsync();
-        //}
 
         [HttpPost]
-        [Route("AddUserBasicDetails")]
         public async Task<ActionResult<UserBasicDetails>> AddUserBasicDetails(UserBasicDetailsDTO request)
         {
             var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
@@ -75,7 +68,6 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPatch]
-        [Route("UpdateUserBasicDetails/(id)")]
         public async Task<ActionResult<UserBasicDetails>> UpdateUserBasicDetails(UserBasicDetailsDTO request)
         {
             var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
@@ -106,7 +98,6 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteUserBasicDetails/(id)")]
         public bool DeleteUserBasicDetails(string id)
         {
             bool isDeleted = false;

@@ -1,8 +1,7 @@
-﻿namespace HRMS_FieldForce.Models.DTOs
+﻿namespace HRMS_FieldForce.Models.DTOs;
+
+public class UserDTOLogin
 {
-    public class UserDTOLogin
-    {
-        public required string Password { get; set; }
-        public required string CompanyEmail { get; set; }
-    }
+    public required string Password { get; set; }
+    public required string CompanyEmail { get; set; }
 }
