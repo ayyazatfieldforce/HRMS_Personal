@@ -26,7 +26,7 @@ namespace HRMS_FieldForce.Controllers
 
             if (dbUser is null)
             {
-                return BadRequest($"Team with id {request.UserId} does not exist.");
+                return BadRequest($"User with id {request.UserId} doesnot exists.");
             }
 
             // Assume that UserId is provided in the DTO for simplicity.
@@ -58,5 +58,82 @@ namespace HRMS_FieldForce.Controllers
 
 
 
+        [HttpGet]
+        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails([FromQuery] string? id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                var userPersonalDetails = await _context.UserPersonalDetails.ToListAsync();
+                return Ok(userPersonalDetails);
+            }
+            else
+            {
+                var userDetail = await _context.UserPersonalDetails.FindAsync(id);
+                if (userDetail is null)
+                {
+                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                }
+                return Ok(userDetail);
+            }
+        }
+
+
+
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserPersonalDetail>> PutUserPersonalDetail(string id, UserPersonalDetailDTO request)
+        {
+            if (id != request.UserId)
+            {
+                return BadRequest("User ID mismatch.");
+            }
+
+            var userPersonalDetail = await _context.UserPersonalDetails.FindAsync(id);
+
+            if (userPersonalDetail == null)
+            {
+                return NotFound($"UserPersonalDetail with UserId {id} not found.");
+            }
+
+            userPersonalDetail.FatherName = request.FatherName;
+            userPersonalDetail.CNIC = request.CNIC;
+            userPersonalDetail.Phone = request.Phone;
+            userPersonalDetail.EmergencyContact = request.EmergencyContact;
+            userPersonalDetail.EmployeeStatus = request.EmployeeStatus;
+            userPersonalDetail.Branch = request.Branch;
+            userPersonalDetail.Department = request.Department;
+            userPersonalDetail.Designation = request.Designation;
+            userPersonalDetail.JobGrade = request.JobGrade;
+            userPersonalDetail.JoiningDate = request.JoiningDate;
+            userPersonalDetail.Address = request.Address;
+            userPersonalDetail.PermanentAddress = request.PermanentAddress;
+
+            _context.Entry(userPersonalDetail).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserPersonalDetailExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        private bool UserPersonalDetailExists(string id)
+        {
+            return _context.UserPersonalDetails.Any(e => e.UserId == id);
+        }
     }
+
+
+
 }
