@@ -76,7 +76,7 @@ namespace HRMS_FieldForce.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var userClaims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Id),
+                new Claim(ClaimTypes.Name, user.UserId),
                 new Claim(ClaimTypes.Role, user.Role)
             };
             var token = new JwtSecurityToken(

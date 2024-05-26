@@ -9,7 +9,7 @@ public class User : IdentityUser
     public required string UserId { get; set; }
 
     [Required]
-    public required string PasswordHash { get; set; }
+    public override required string PasswordHash { get; set; }
 
     [Required]
     public required string FirstName { get; set; }
@@ -23,12 +23,14 @@ public class User : IdentityUser
     [Required]
     public required string Role { get; set; }
 
-    [EmailAddress]
     [Required]
+    [EmailAddress]
+    [DataType(DataType.EmailAddress)]
     public required string PersonalEmail { get; set; }
 
-    [EmailAddress]
     [Required]
+    [EmailAddress]
+    [DataType(DataType.EmailAddress)]
     public required string CompanyEmail { get; set; }
 
     //public virtual ICollection<UserBasicDetails> userBasicDetails { get; set; }

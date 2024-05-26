@@ -71,6 +71,7 @@ namespace HRMS_FieldForce.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("PersonalEmail")

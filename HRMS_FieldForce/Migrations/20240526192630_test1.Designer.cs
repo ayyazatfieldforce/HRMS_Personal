@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240526160224_test1")]
+    [Migration("20240526192630_test1")]
     partial class test1
     {
         /// <inheritdoc />
@@ -74,6 +74,7 @@ namespace HRMS_FieldForce.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("PersonalEmail")
