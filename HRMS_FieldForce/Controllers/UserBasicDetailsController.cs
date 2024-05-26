@@ -1,9 +1,11 @@
 ﻿using HRMS_FieldForce.Models;
 using HRMS_FieldForce.Models.DBcontext;
 using HRMS_FieldForce.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HRMS_FieldForce.Controllers
 {
@@ -19,8 +21,10 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserBasicDetails>> GetUserDetails([FromQuery] string? id)
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<UserBasicDetails>> GetUserDetails()
         {
+            string id = GetCurrentUserID().UserID;
             if (string.IsNullOrEmpty(id))
             {
                 var UserBasicDetails = await _UserDBContext.UserBasicDetails.ToListAsync();
@@ -39,6 +43,7 @@ namespace HRMS_FieldForce.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> AddUserBasicDetails(UserBasicDetailsDTO request)
         {
             var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
@@ -68,6 +73,7 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPatch]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> UpdateUserBasicDetails(UserBasicDetailsDTO request)
         {
             var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
@@ -98,8 +104,10 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpDelete]
-        public bool DeleteUserBasicDetails(string id)
+        [Authorize(Roles = "User")]
+        public bool DeleteUserBasicDetails()
         {
+            string id = GetCurrentUserID().UserID;
             bool isDeleted = false;
             var userToDelete = _UserDBContext.UserBasicDetails.Find(id);
             if (userToDelete != null)
@@ -113,6 +121,22 @@ namespace HRMS_FieldForce.Controllers
                 isDeleted = false;
             }
             return isDeleted;
+        }
+
+        private CurrentUserJWT GetCurrentUserID()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                return new CurrentUserJWT
+                {
+                    UserID = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
+                    CompanyEmail = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
+                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value
+                };
+            }
+            return null;
         }
     }
 }

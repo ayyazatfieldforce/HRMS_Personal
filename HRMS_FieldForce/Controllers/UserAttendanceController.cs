@@ -19,9 +19,12 @@ namespace HRMS_FieldForce.Controllers
         {
             _UserDBContext = userDBContext;
         }
+
         [HttpGet]
-        public async Task<ActionResult<UserAttendance>> GetUserAttendance([FromQuery] string? id)
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<UserAttendance>> GetUserAttendance()
         {
+            string id = GetCurrentUserID().UserID;
             if (string.IsNullOrEmpty(id))
             {
                 var UserAttendances = await _UserDBContext.UserAttendances.ToListAsync();
@@ -39,7 +42,8 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserAttendance>> userCheckIn (UserAttendanceDTO request)
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<UserAttendance>> MarkUserAttendance(UserAttendanceDTO request)
         {
 
             var UserIDfromJWT = GetCurrentUserID();
@@ -56,13 +60,13 @@ namespace HRMS_FieldForce.Controllers
             return Ok(UserAttendance);
         }
 
-        [HttpGet("JWTCheck")]
-        [Authorize(Roles = "User")]
-        public IActionResult userEndpoint()
-        {
-            var currentUser = GetCurrentUserID();
-            return Ok($"hello {currentUser.Role}");
-        }
+        //[HttpGet("JWTCheck")]
+        //[Authorize(Roles = "User")]
+        //public IActionResult userEndpoint()
+        //{
+        //    var currentUser = GetCurrentUserID();
+        //    return Ok($"hello {currentUser.Role}");
+        //}
 
         private CurrentUserJWT GetCurrentUserID()
         {
@@ -72,7 +76,7 @@ namespace HRMS_FieldForce.Controllers
                 var userClaims = identity.Claims;
                 return new CurrentUserJWT
                 {
-                    UserID = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value,
+                    UserID = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
                     CompanyEmail = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
                     Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value
                 };

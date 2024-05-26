@@ -2,7 +2,7 @@
 
 public class UserPersonalDetailDTO
 {
-    public string UserId { get; set; }
+    public required string UserId { get; set; }
     public string FatherName { get; set; } = string.Empty;
     public string CNIC { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;

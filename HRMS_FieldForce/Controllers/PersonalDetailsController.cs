@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HRMS_FieldForce.Controllers
 {
@@ -21,6 +22,7 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<UserPersonalDetail>> PostUserPersonalDetail(UserPersonalDetailDTO request)
         {
 
@@ -61,8 +63,10 @@ namespace HRMS_FieldForce.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails([FromQuery] string? id)
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails()
         {
+            string id = GetCurrentUserID().UserID;
             if (string.IsNullOrEmpty(id))
             {
                 var userPersonalDetails = await _context.UserPersonalDetails.ToListAsync();
@@ -82,9 +86,11 @@ namespace HRMS_FieldForce.Controllers
 
 
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UserPersonalDetail>> PutUserPersonalDetail(string id, UserPersonalDetailDTO request)
+        [HttpPut]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<UserPersonalDetail>> PutUserPersonalDetail(UserPersonalDetailDTO request)
         {
+            string id = GetCurrentUserID().UserID;
             if (id != request.UserId)
             {
                 return BadRequest("User ID mismatch.");
@@ -133,6 +139,22 @@ namespace HRMS_FieldForce.Controllers
         private bool UserPersonalDetailExists(string id)
         {
             return _context.UserPersonalDetails.Any(e => e.UserId == id);
+        }
+
+        private CurrentUserJWT GetCurrentUserID()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                return new CurrentUserJWT
+                {
+                    UserID = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
+                    CompanyEmail = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
+                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value
+                };
+            }
+            return null;
         }
     }
 
