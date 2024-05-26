@@ -3,16 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HRMS_FieldForce.Models;
 
-enum weekDays
-{
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
-    Sunday
-}
 public class UserAttendance
 {
     [Key]

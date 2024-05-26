@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS_FieldForce.Models;
 
-public class User
+public class User : IdentityUser
 {
     [Key]
     public required string UserId { get; set; }
 
-    [Required]
-    public required string PasswordHash { get; set; }
+    //[Required]
+    //public required string PasswordHash { get; set; }
 
     [Required]
     public required string FirstName { get; set; }

@@ -1,9 +1,11 @@
 ﻿using HRMS_FieldForce.Models;
 using HRMS_FieldForce.Models.DBcontext;
 using HRMS_FieldForce.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HRMS_FieldForce.Controllers
 {
@@ -12,6 +14,7 @@ namespace HRMS_FieldForce.Controllers
     public class UserAttendanceController : ControllerBase
     {
         private readonly UserDBContext _UserDBContext;
+
         public UserAttendanceController(UserDBContext userDBContext)
         {
             _UserDBContext = userDBContext;
@@ -38,16 +41,12 @@ namespace HRMS_FieldForce.Controllers
         [HttpPost]
         public async Task<ActionResult<UserAttendance>> userCheckIn (UserAttendanceDTO request)
         {
-            var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
 
-            if (dbUser is null)
-            {
-                return BadRequest($"User with id {request.UserId} does not exist.");
-            }
+            var UserIDfromJWT = GetCurrentUserID();
 
             var UserAttendance = new UserAttendance
             {
-                UserId = request.UserId,
+                UserId = UserIDfromJWT.UserID,
                 day = DateTime.Now.DayOfWeek.ToString(),
                 checkIn = request.checkIn,
                 checkOut = request.checkOut
@@ -56,5 +55,30 @@ namespace HRMS_FieldForce.Controllers
             await _UserDBContext.SaveChangesAsync();
             return Ok(UserAttendance);
         }
+
+        [HttpGet("JWTCheck")]
+        [Authorize]
+        public IActionResult userEndpoint()
+        {
+            var currentUser = GetCurrentUserID();
+            return Ok($"hello {currentUser.UserID} what is your name?");
+        }
+
+        private CurrentUserJWT GetCurrentUserID()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                return new CurrentUserJWT
+                {
+                    UserID = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value,
+                    CompanyEmail = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
+                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value
+                };
+            }
+            return null;
+        }
+
     }
 }
