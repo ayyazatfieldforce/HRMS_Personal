@@ -72,26 +72,23 @@ namespace HRMS_FieldForce.Controllers
 
         private string CreateToken(User user)
         {
-            var key = _configuration.GetValue<string>("Appsettings:Token");
-            var keyBytes = Encoding.UTF8.GetBytes(key!);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Appsettings:Token"]!));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var userClaims = new[]
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                     {
-                     new Claim(ClaimTypes.NameIdentifier, user.UserId),
-                     new Claim(ClaimTypes.Email, user.CompanyEmail),
-                     new Claim(ClaimTypes.Role, user.Role)
-                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
-                SigningCredentials = new SigningCredentials(
-                                      new SymmetricSecurityKey(keyBytes),
-                                      SecurityAlgorithms.HmacSha512Signature)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Role, user.Role)
             };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: userClaims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: credentials
+                );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-       
+
     }
 }

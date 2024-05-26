@@ -57,11 +57,11 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpGet("JWTCheck")]
-        [Authorize]
+        [Authorize(Roles = "User")]
         public IActionResult userEndpoint()
         {
             var currentUser = GetCurrentUserID();
-            return Ok($"hello {currentUser.UserID} what is your name?");
+            return Ok($"hello {currentUser.Role}");
         }
 
         private CurrentUserJWT GetCurrentUserID()
