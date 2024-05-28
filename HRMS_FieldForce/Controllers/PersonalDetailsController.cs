@@ -25,21 +25,12 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserPersonalDetail>> PostUserPersonalDetail(UserPersonalDetailDTO request)
         {
-
-            var dbUser = await _context.Users.FindAsync(request.UserId);
-
-            if (dbUser is null)
-            {
-                return BadRequest($"User with id {request.UserId} doesnot exists.");
-            }
-
-            // Assume that UserId is provided in the DTO for simplicity.
-            // In a real-world scenario, you might get it from the authenticated user context.
-            string userId = request.UserId;
+            string id = GetCurrentUserID().UserID;
+            var dbUser = await _context.Users.FindAsync(id);
 
             var userPersonalDetail = new UserPersonalDetail
             {
-                UserId = userId,
+                UserId = id,
                 FatherName = request.FatherName,
                 CNIC = request.CNIC,
                 Phone = request.Phone,
@@ -91,10 +82,6 @@ namespace HRMS_FieldForce.Controllers
         public async Task<ActionResult<UserPersonalDetail>> PutUserPersonalDetail(UserPersonalDetailDTO request)
         {
             string id = GetCurrentUserID().UserID;
-            if (id != request.UserId)
-            {
-                return BadRequest("User ID mismatch.");
-            }
 
             var userPersonalDetail = await _context.UserPersonalDetails.FindAsync(id);
 

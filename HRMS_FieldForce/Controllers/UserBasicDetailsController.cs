@@ -24,21 +24,13 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> GetUserDetails()
         {
-            string id = GetCurrentUserID().UserID;
-            if (string.IsNullOrEmpty(id))
+            string id = GetCurrentUser().UserID;
+            var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
+            if (userDetail is null)
             {
-                var UserBasicDetails = await _UserDBContext.UserBasicDetails.ToListAsync();
-                return Ok(UserBasicDetails);
+                return NotFound($"UserPersonalDetail with UserId {id} not found.");
             }
-            else
-            {
-                var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
-                if (userDetail is null)
-                {
-                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
-                }
-                return Ok(userDetail);
-            }
+            return Ok(userDetail);
         }
 
 
@@ -46,16 +38,17 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> AddUserBasicDetails(UserBasicDetailsDTO request)
         {
-            var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
+            string id = GetCurrentUser().UserID;
+            var dbUser = await _UserDBContext.Users.FindAsync(id);
 
             if (dbUser is null)
             {
-                return BadRequest($"User with id {request.UserId} does not exist.");
+                return BadRequest($"User with id {id} does not exist.");
             }
 
             var UserBasicDetails = new UserBasicDetails
             {
-                UserId = request.UserId,
+                UserId = id,
                 WorkingHours = request.WorkingHours,
                 ReportingTo = request.ReportingTo,
                 MaritalStatus = request.MaritalStatus,
@@ -76,16 +69,17 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> UpdateUserBasicDetails(UserBasicDetailsDTO request)
         {
-            var dbUser = await _UserDBContext.Users.FindAsync(request.UserId);
+            string id = GetCurrentUser().UserID;
+            var dbUser = await _UserDBContext.Users.FindAsync(id);
 
             if (dbUser is null)
             {
-                return BadRequest($"User with id {request.UserId} does not exist.");
+                return BadRequest($"User with id {id} does not exist.");
             }
 
             var UserBasicDetails = new UserBasicDetails
             {
-                UserId = request.UserId,
+                UserId = id,
                 WorkingHours = request.WorkingHours,
                 ReportingTo = request.ReportingTo,
                 MaritalStatus = request.MaritalStatus,
@@ -107,7 +101,7 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public bool DeleteUserBasicDetails()
         {
-            string id = GetCurrentUserID().UserID;
+            string id = GetCurrentUser().UserID;
             bool isDeleted = false;
             var userToDelete = _UserDBContext.UserBasicDetails.Find(id);
             if (userToDelete != null)
@@ -123,7 +117,7 @@ namespace HRMS_FieldForce.Controllers
             return isDeleted;
         }
 
-        private CurrentUserJWT GetCurrentUserID()
+        private CurrentUserJWT GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)

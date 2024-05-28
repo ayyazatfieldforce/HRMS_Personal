@@ -5,7 +5,6 @@ namespace HRMS_FieldForce.Models.DTOs;
 
 public class UserBasicDetailsDTO
 {
-    public required string UserId { get; set; }
     public required string WorkingHours { get; set; } = string.Empty;
     public required string ReportingTo { get; set; } = string.Empty;
     public required string MaritalStatus { get; set; } = string.Empty;

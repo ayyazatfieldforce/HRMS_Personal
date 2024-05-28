@@ -24,7 +24,7 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserAttendance>> GetUserAttendance()
         {
-            string id = GetCurrentUserID().UserID;
+            string id = GetCurrentUser().UserID;
             if (string.IsNullOrEmpty(id))
             {
                 var UserAttendances = await _UserDBContext.UserAttendances.ToListAsync();
@@ -46,7 +46,7 @@ namespace HRMS_FieldForce.Controllers
         public async Task<ActionResult<UserAttendance>> MarkUserAttendance(UserAttendanceDTO request)
         {
 
-            var UserIDfromJWT = GetCurrentUserID();
+            var UserIDfromJWT = GetCurrentUser();
 
             var UserAttendance = new UserAttendance
             {
@@ -60,15 +60,7 @@ namespace HRMS_FieldForce.Controllers
             return Ok(UserAttendance);
         }
 
-        //[HttpGet("JWTCheck")]
-        //[Authorize(Roles = "User")]
-        //public IActionResult userEndpoint()
-        //{
-        //    var currentUser = GetCurrentUserID();
-        //    return Ok($"hello {currentUser.Role}");
-        //}
-
-        private CurrentUserJWT GetCurrentUserID()
+        private CurrentUserJWT GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
