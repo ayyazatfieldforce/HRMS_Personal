@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HRMS_FieldForce.Migrations
 {
     /// <inheritdoc />
-    public partial class test1 : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,14 +46,14 @@ namespace HRMS_FieldForce.Migrations
                 {
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    checkIn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     day = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    checkIn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     checkOut = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserAttendances", x => x.UserId);
+                    table.PrimaryKey("PK_UserAttendances", x => new { x.UserId, x.checkIn });
                     table.ForeignKey(
                         name: "FK_UserAttendances_Users_UserId",
                         column: x => x.UserId,

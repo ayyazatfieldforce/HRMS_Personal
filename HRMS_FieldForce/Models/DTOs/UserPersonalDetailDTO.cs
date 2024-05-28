@@ -14,6 +14,4 @@ public class UserPersonalDetailDTO
     public DateTime JoiningDate { get; set; }
     public string Address { get; set; } = string.Empty;
     public string PermanentAddress { get; set; } = string.Empty;
-
-
 }

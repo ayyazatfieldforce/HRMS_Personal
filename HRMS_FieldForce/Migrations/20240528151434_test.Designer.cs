@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240528105802_test1")]
-    partial class test1
+    [Migration("20240528151434_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,10 +65,12 @@ namespace HRMS_FieldForce.Migrations
             modelBuilder.Entity("HRMS_FieldForce.Models.UserAttendance", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasColumnOrder(0);
 
                     b.Property<DateTime>("checkIn")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("checkOut")
                         .HasColumnType("datetime(6)");
@@ -77,7 +79,7 @@ namespace HRMS_FieldForce.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("UserId");
+                    b.HasKey("UserId", "checkIn");
 
                     b.ToTable("UserAttendances");
                 });

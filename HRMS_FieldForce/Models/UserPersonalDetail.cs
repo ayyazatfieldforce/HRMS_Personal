@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRMS_FieldForce.Models;
 
 public class UserPersonalDetail
 {
-
-
     [Key]
     [Required]
     [ForeignKey("User")]
     public required string UserId { get; set; }
 
+    // Navigation property
+    public User? User { get; set; }
 
     [Required]
     public required string FatherName { get; set; }
@@ -49,6 +50,5 @@ public class UserPersonalDetail
     [Required]
     public required string PermanentAddress { get; set; }
 
-    // Navigation property
-    public User? User { get; set; }
+    
 }

@@ -8,11 +8,17 @@ namespace HRMS_FieldForce.Models.DBcontext
     {
         public UserDBContext(DbContextOptions<UserDBContext> options) : base(options)
         {
+
         }
         public DbSet<User> Users { get; set; }
         public DbSet<UserBasicDetails> UserBasicDetails { get; set; }
         public DbSet<UserPersonalDetail> UserPersonalDetails { get; set; }
         public DbSet<UserAttendance> UserAttendances { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserAttendance>().HasKey(ua => new { ua.UserId, ua.checkIn });
+        }
 
     }
 }

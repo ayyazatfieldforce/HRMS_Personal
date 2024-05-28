@@ -62,10 +62,12 @@ namespace HRMS_FieldForce.Migrations
             modelBuilder.Entity("HRMS_FieldForce.Models.UserAttendance", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(255)")
+                        .HasColumnOrder(0);
 
                     b.Property<DateTime>("checkIn")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("checkOut")
                         .HasColumnType("datetime(6)");
@@ -74,7 +76,7 @@ namespace HRMS_FieldForce.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("UserId");
+                    b.HasKey("UserId", "checkIn");
 
                     b.ToTable("UserAttendances");
                 });

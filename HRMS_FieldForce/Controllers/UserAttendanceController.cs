@@ -22,30 +22,21 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpGet]
         [Authorize(Roles = "User")]
-        public async Task<ActionResult<UserAttendance>> GetUserAttendance()
+        public async Task<ActionResult<IEnumerable<UserAttendance>>> GetUserAttendance()
         {
             string id = GetCurrentUser().UserID;
-            if (string.IsNullOrEmpty(id))
+            var userDetail = await _UserDBContext.UserAttendances.SingleOrDefaultAsync(user => user.UserId == id);
+            if (userDetail is null)
             {
-                var UserAttendances = await _UserDBContext.UserAttendances.ToListAsync();
-                return Ok(UserAttendances);
+                return NotFound($"Attendance with UserId {id} not found.");
             }
-            else
-            {
-                var userDetail = await _UserDBContext.UserAttendances.FindAsync(id);
-                if (userDetail is null)
-                {
-                    return NotFound($"Attendance with UserId {id} not found.");
-                }
-                return Ok(userDetail);
-            }
+            return Ok(userDetail);
         }
 
         [HttpPost]
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserAttendance>> MarkUserAttendance(UserAttendanceDTO request)
         {
-
             var UserIDfromJWT = GetCurrentUser();
 
             var UserAttendance = new UserAttendance

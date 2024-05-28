@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS_FieldForce.Models;
@@ -9,6 +10,9 @@ public class UserBasicDetails
     [Required]
     [ForeignKey("User")]
     public required string UserId { get; set; }
+
+    // Navigation property
+    public User? User { get; set; }
 
     [Required]
     public required string WorkingHours { get; set; }
@@ -50,6 +54,4 @@ public class UserBasicDetails
     public required string Benefits { get; set; }
 
 
-    // Navigation property
-    public User? User { get; set; }
 }
