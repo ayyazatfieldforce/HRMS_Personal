@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HRMS_FieldForce.Models;
 
-public class User : IdentityUser
+public class User 
 {
     [Key]
     public required string UserId { get; set; }
 
     [Required]
-    public override required string PasswordHash { get; set; }
+    public required string PasswordHash { get; set; }
 
     [Required]
     public required string FirstName { get; set; }

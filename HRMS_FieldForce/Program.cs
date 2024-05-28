@@ -23,11 +23,11 @@ var connectionString = builder.Configuration.GetConnectionString("DevConnection"
 builder.Services.AddDbContext<UserDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 //Add Identity & JWT authentication
-//Identity
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<UserDBContext>()
-    .AddSignInManager()
-    .AddRoles<IdentityRole>();
+////Identity
+//builder.Services.AddIdentity<User, IdentityRole>()
+//    .AddEntityFrameworkStores<UserDBContext>()
+//    .AddSignInManager()
+//    .AddRoles<IdentityRole>();
 
 // JWT 
 builder.Services.AddAuthentication(options =>
