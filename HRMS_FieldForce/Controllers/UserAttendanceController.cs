@@ -22,10 +22,12 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpGet]
         [Authorize(Roles = "User")]
-        public async Task<ActionResult<IEnumerable<UserAttendance>>> GetUserAttendance()
+        public async Task<ActionResult<UserAttendance>> GetUserAttendance()
         {
             string id = GetCurrentUser().UserID;
-            var userDetail = await _UserDBContext.UserAttendances.SingleOrDefaultAsync(user => user.UserId == id);
+            var userDetail = await _UserDBContext.UserAttendances
+                            .Where(user => user.UserId == id)
+                            .ToListAsync();
             if (userDetail is null)
             {
                 return NotFound($"Attendance with UserId {id} not found.");
