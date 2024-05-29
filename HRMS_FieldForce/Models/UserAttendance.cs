@@ -7,7 +7,6 @@ namespace HRMS_FieldForce.Models;
 
 public class UserAttendance
 {
-
     [Key, Column(Order = 0)]
     [Required]
     [ForeignKey("User")]

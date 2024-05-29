@@ -8,6 +8,8 @@ public class UserBasicDetailsDTO
     public required string WorkingHours { get; set; } = string.Empty;
     public required string ReportingTo { get; set; } = string.Empty;
     public required string MaritalStatus { get; set; } = string.Empty;
+
+    [Required]
     public required DateTime DateOfBirth { get; set; } 
     public required string ExperienceInFieldForce { get; set; } = string.Empty;
     public required string TotalExperience { get; set; } = string.Empty;

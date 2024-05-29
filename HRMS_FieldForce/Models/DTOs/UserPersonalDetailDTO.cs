@@ -1,11 +1,21 @@
-﻿namespace HRMS_FieldForce.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HRMS_FieldForce.Models;
 
 public class UserPersonalDetailDTO
 {
     public string FatherName { get; set; } = string.Empty;
+
+    [Required]
     public string CNIC { get; set; } = string.Empty;
+
+    [Required]
     public string Phone { get; set; } = string.Empty;
+
+    [Required]
     public string EmergencyContact { get; set; } = string.Empty;
+
+    [Required]
     public string EmployeeStatus { get; set; } = string.Empty;
     public string Branch { get; set; } = string.Empty;
     public string Department { get; set; } = string.Empty;
@@ -13,5 +23,7 @@ public class UserPersonalDetailDTO
     public string? JobGrade { get; set; }
     public DateTime JoiningDate { get; set; }
     public string Address { get; set; } = string.Empty;
+
+    [Required]
     public string PermanentAddress { get; set; } = string.Empty;
 }
