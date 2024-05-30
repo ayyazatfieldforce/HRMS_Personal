@@ -4,6 +4,7 @@ using HRMS_FieldForce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240530101848_RolesTableNowAdded")]
+    partial class RolesTableNowAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,20 +24,6 @@ namespace HRMS_FieldForce.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("HRMS_FieldForce.Models.Role", b =>
-                {
-                    b.Property<string>("RoleID")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("RoleID");
-
-                    b.ToTable("Roles");
-                });
 
             modelBuilder.Entity("HRMS_FieldForce.Models.User", b =>
                 {
@@ -66,11 +55,9 @@ namespace HRMS_FieldForce.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("Role");
 
                     b.ToTable("Users");
                 });
@@ -120,7 +107,7 @@ namespace HRMS_FieldForce.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserBasicDetails");
+                    b.ToTable("UserBasicDetail");
                 });
 
             modelBuilder.Entity("HRMS_FieldForce.Models.UserPersonalDetail", b =>
@@ -179,17 +166,6 @@ namespace HRMS_FieldForce.Migrations
                     b.ToTable("UserPersonalDetails");
                 });
 
-            modelBuilder.Entity("HRMS_FieldForce.Models.User", b =>
-                {
-                    b.HasOne("HRMS_FieldForce.Models.Role", "RoleAssigned")
-                        .WithMany("Users")
-                        .HasForeignKey("Role")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RoleAssigned");
-                });
-
             modelBuilder.Entity("HRMS_FieldForce.Models.UserBasicDetail", b =>
                 {
                     b.HasOne("HRMS_FieldForce.Models.User", "User")
@@ -210,11 +186,6 @@ namespace HRMS_FieldForce.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("HRMS_FieldForce.Models.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

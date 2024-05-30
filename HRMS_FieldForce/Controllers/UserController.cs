@@ -47,17 +47,17 @@ namespace HRMS_FieldForce.Controllers
             {
                 if (user.FirstName.ToLower().Contains(searchLower))
                 {
-                    result.Add(new { firstName = user.FirstName, userId = user.UserId });
+                    result.Add(new { Id = "FName", firstName = user.FirstName, userId = user.UserId });
                 }
 
                 if (user.CompanyEmail.ToLower().Contains(searchLower))
                 {
-                    result.Add(new { companyEmail = user.CompanyEmail, userId = user.UserId });
+                    result.Add(new { Id = "CEmail", companyEmail = user.CompanyEmail, userId = user.UserId });
                 }
 
                 if (user.Role.ToLower().Contains(searchLower))
                 {
-                    result.Add(new { role = user.Role, userId = user.UserId });
+                    result.Add(new { Id = "Role" , role = user.Role, userId = user.UserId });
                 }
             }
 
@@ -110,6 +110,26 @@ namespace HRMS_FieldForce.Controllers
 
             return Ok(userDetails);
         }
+        [HttpGet("FilterRole")]
+        public async Task<ActionResult<IEnumerable<object>>> FilterRole([FromQuery] string? role)
+        {
+            IQueryable<object> query = _context.Users.Where(u => string.IsNullOrEmpty(role) || u.Role.ToLower() == role.ToLower())
+                .Select(u => new
+                {
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    DateOfBirth = u.DateOfBirth,
+                    PersonalEmail = u.PersonalEmail,
+                    CompanyEmail = u.CompanyEmail
+                });
+            
+
+            var users = await query.ToListAsync();
+
+            return Ok(users);
+        }
+
 
     }
 }
