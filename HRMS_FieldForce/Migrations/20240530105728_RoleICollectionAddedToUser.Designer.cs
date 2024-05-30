@@ -4,6 +4,7 @@ using HRMS_FieldForce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240530105728_RoleICollectionAddedToUser")]
+    partial class RoleICollectionAddedToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,11 +69,14 @@ namespace HRMS_FieldForce.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RoleAssignedRoleID")
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("Role");
+                    b.HasIndex("RoleAssignedRoleID");
 
                     b.ToTable("Users");
                 });
@@ -183,9 +189,7 @@ namespace HRMS_FieldForce.Migrations
                 {
                     b.HasOne("HRMS_FieldForce.Models.Role", "RoleAssigned")
                         .WithMany("Users")
-                        .HasForeignKey("Role")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleAssignedRoleID");
 
                     b.Navigation("RoleAssigned");
                 });

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMS_FieldForce.Models
 {
@@ -20,6 +21,7 @@ namespace HRMS_FieldForce.Models
         public DateTime DateOfBirth { get; set; }
 
         [Required]
+        [ForeignKey("RoleAssigned")]
         public required string Role { get; set; }
 
         [EmailAddress]
@@ -29,6 +31,9 @@ namespace HRMS_FieldForce.Models
         [EmailAddress]
         [Required]
         public required string CompanyEmail { get; set; }
+
+        // Navigation property
+        public Role? RoleAssigned { get; set; }
 
 
     }
