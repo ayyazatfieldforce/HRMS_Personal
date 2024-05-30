@@ -24,7 +24,7 @@ namespace HRMS_FieldForce.Controllers
             return Ok(users);
         }
         [HttpGet("Search")]
-        public async Task<ActionResult<IEnumerable<User>>> SearchUsers([FromQuery] string? searchText)
+        public async Task<ActionResult<IEnumerable<object>>> SearchUsers([FromQuery] string? searchText)
         {
             if (string.IsNullOrEmpty(searchText))
             {
@@ -37,12 +37,33 @@ namespace HRMS_FieldForce.Controllers
             var query = _context.Users
                 .Where(u => EF.Functions.Like(u.FirstName.ToLower(), "%" + searchLower + "%") ||
                             EF.Functions.Like(u.CompanyEmail.ToLower(), "%" + searchLower + "%") ||
-                            EF.Functions.Like(u.Role.ToLower(), searchLower));
+                            EF.Functions.Like(u.Role.ToLower(), "%" + searchLower + "%"));
 
             var users = await query.ToListAsync();
 
-            return Ok(users);
+            var result = new List<object>();
+
+            foreach (var user in users)
+            {
+                if (user.FirstName.ToLower().Contains(searchLower))
+                {
+                    result.Add(new { firstName = user.FirstName, userId = user.UserId });
+                }
+
+                if (user.CompanyEmail.ToLower().Contains(searchLower))
+                {
+                    result.Add(new { companyEmail = user.CompanyEmail, userId = user.UserId });
+                }
+
+                if (user.Role.ToLower().Contains(searchLower))
+                {
+                    result.Add(new { role = user.Role, userId = user.UserId });
+                }
+            }
+
+            return Ok(result);
         }
+
         [HttpGet("Details/{id}")]
         public async Task<ActionResult> GetUserDetails(string id)
         {
