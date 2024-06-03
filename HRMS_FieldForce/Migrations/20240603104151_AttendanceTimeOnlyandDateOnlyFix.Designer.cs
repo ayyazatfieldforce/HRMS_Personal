@@ -4,6 +4,7 @@ using HRMS_FieldForce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240603104151_AttendanceTimeOnlyandDateOnlyFix")]
+    partial class AttendanceTimeOnlyandDateOnlyFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,15 +30,15 @@ namespace HRMS_FieldForce.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Date")
-                        .HasColumnType("varchar(255)");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
-                    b.Property<string>("CheckInTime")
+                    b.Property<TimeOnly?>("CheckInTime")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("time(6)");
 
-                    b.Property<string>("CheckOutTime")
-                        .HasColumnType("longtext");
+                    b.Property<TimeOnly?>("CheckOutTime")
+                        .HasColumnType("time(6)");
 
                     b.Property<string>("WorkFrom")
                         .HasMaxLength(10)

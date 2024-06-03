@@ -16,14 +16,14 @@ namespace HRMS_FieldForce.Data
         public DbSet<UserBasicDetail> UserBasicDetails { get; set; }
         public DbSet<Role> Roles { get; set; }
 
-        //public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<Attendance> Attendances { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-        //    modelBuilder.Entity<Attendance>()
-        //        .HasKey(a => new { a.UserId, a.Date });
-        //}
+            modelBuilder.Entity<Attendance>()
+                .HasKey(a => new { a.UserId, a.Date });
+        }
     }
 }
