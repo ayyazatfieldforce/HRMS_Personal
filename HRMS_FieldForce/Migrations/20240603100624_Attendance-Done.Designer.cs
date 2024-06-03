@@ -4,6 +4,7 @@ using HRMS_FieldForce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240603100624_Attendance-Done")]
+    partial class AttendanceDone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,15 +30,14 @@ namespace HRMS_FieldForce.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Date")
-                        .HasColumnType("varchar(255)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CheckInTime")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<DateTime?>("CheckInTime")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CheckOutTime")
-                        .HasColumnType("longtext");
+                    b.Property<DateTime?>("CheckOutTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("WorkFrom")
                         .HasMaxLength(10)
