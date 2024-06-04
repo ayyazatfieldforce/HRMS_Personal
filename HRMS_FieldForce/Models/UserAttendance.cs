@@ -20,8 +20,8 @@ public class UserAttendance
 
     [Key, Column(Order = 1)]
     [Required]
-    public DateTime checkIn { get; set; } = DateTime.Now;
+    public TimeOnly checkIn { get; set; }
 
     [Required]
-    public DateTime checkOut { get; set; }
+    public TimeOnly checkOut { get; set; }
 }

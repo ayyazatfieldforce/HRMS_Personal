@@ -4,6 +4,6 @@ namespace HRMS_FieldForce.Models.DTOs;
 
 public class UserAttendanceDTO
 {
-    public DateTime checkIn { get; set; }
-    public DateTime checkOut { get; set; }
+    public TimeOnly checkIn { get; set; }
+    public TimeOnly checkOut { get; set; }
 }
