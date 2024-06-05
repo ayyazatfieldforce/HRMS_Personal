@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HRMS_FieldForce.Migrations
 {
     /// <inheritdoc />
-    public partial class test : Migration
+    public partial class leave1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,14 +46,14 @@ namespace HRMS_FieldForce.Migrations
                 {
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    checkIn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    day = table.Column<string>(type: "longtext", nullable: false)
+                    day = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    checkOut = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    checkIn = table.Column<TimeOnly>(type: "time(6)", nullable: false),
+                    checkOut = table.Column<TimeOnly>(type: "time(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserAttendances", x => new { x.UserId, x.checkIn });
+                    table.PrimaryKey("PK_UserAttendances", x => new { x.UserId, x.day });
                     table.ForeignKey(
                         name: "FK_UserAttendances_Users_UserId",
                         column: x => x.UserId,
@@ -93,6 +93,35 @@ namespace HRMS_FieldForce.Migrations
                     table.PrimaryKey("PK_UserBasicDetails", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_UserBasicDetails_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UserLeaves",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ApplyDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ToDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    LeaveCategory = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LeaveType = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Reason = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    status = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLeaves", x => new { x.UserId, x.ApplyDate });
+                    table.ForeignKey(
+                        name: "FK_UserLeaves_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -151,6 +180,9 @@ namespace HRMS_FieldForce.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserBasicDetails");
+
+            migrationBuilder.DropTable(
+                name: "UserLeaves");
 
             migrationBuilder.DropTable(
                 name: "UserPersonalDetails");

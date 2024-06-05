@@ -15,10 +15,10 @@ public class UserAttendance
     // Navigation property
     public User? User { get; set; }
 
+    [Key, Column(Order = 1)]
     [Required]
     public string day {  get; set; } = DateTime.Now.DayOfWeek.ToString();
 
-    [Key, Column(Order = 1)]
     [Required]
     public TimeOnly checkIn { get; set; }
 

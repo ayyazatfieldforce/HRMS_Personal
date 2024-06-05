@@ -14,10 +14,13 @@ namespace HRMS_FieldForce.Models.DBcontext
         public DbSet<UserBasicDetails> UserBasicDetails { get; set; }
         public DbSet<UserPersonalDetail> UserPersonalDetails { get; set; }
         public DbSet<UserAttendance> UserAttendances { get; set; }
+        public DbSet<UserLeave> UserLeaves { get; set; }
 
+        // for composite key in attendace module
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserAttendance>().HasKey(ua => new { ua.UserId, ua.checkIn });
+            modelBuilder.Entity<UserAttendance>().HasKey(ua => new { ua.UserId, ua.day });
+            modelBuilder.Entity<UserLeave>().HasKey(ua => new { ua.UserId, ua.ApplyDate });
         }
 
     }

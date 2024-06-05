@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240528151434_test")]
-    partial class test
+    [Migration("20240605090939_leave1")]
+    partial class leave1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,18 +68,17 @@ namespace HRMS_FieldForce.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnOrder(0);
 
-                    b.Property<DateTime>("checkIn")
-                        .HasColumnType("datetime(6)")
+                    b.Property<string>("day")
+                        .HasColumnType("varchar(255)")
                         .HasColumnOrder(1);
 
-                    b.Property<DateTime>("checkOut")
-                        .HasColumnType("datetime(6)");
+                    b.Property<TimeOnly>("checkIn")
+                        .HasColumnType("time(6)");
 
-                    b.Property<string>("day")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<TimeOnly>("checkOut")
+                        .HasColumnType("time(6)");
 
-                    b.HasKey("UserId", "checkIn");
+                    b.HasKey("UserId", "day");
 
                     b.ToTable("UserAttendances");
                 });
@@ -130,6 +129,40 @@ namespace HRMS_FieldForce.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UserBasicDetails");
+                });
+
+            modelBuilder.Entity("HRMS_FieldForce.Models.UserLeave", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateOnly>("ApplyDate")
+                        .HasColumnType("date")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("LeaveCategory")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LeaveType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateOnly>("ToDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("UserId", "ApplyDate");
+
+                    b.ToTable("UserLeaves");
                 });
 
             modelBuilder.Entity("HRMS_FieldForce.Models.UserPersonalDetail", b =>
@@ -200,6 +233,17 @@ namespace HRMS_FieldForce.Migrations
                 });
 
             modelBuilder.Entity("HRMS_FieldForce.Models.UserBasicDetails", b =>
+                {
+                    b.HasOne("HRMS_FieldForce.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HRMS_FieldForce.Models.UserLeave", b =>
                 {
                     b.HasOne("HRMS_FieldForce.Models.User", "User")
                         .WithMany()
