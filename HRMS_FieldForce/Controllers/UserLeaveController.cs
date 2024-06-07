@@ -288,6 +288,24 @@ namespace HRMS_FieldForce.Controllers
             }
         }
 
+        //[HttpGet("maxID")]
+        //public ActionResult<LeaveCategory> GetMaxUserID()
+        //{
+        //    try
+        //    {
+        //        var lastUser = _context.leaveCategories.OrderByDescending(u => u.Id).FirstOrDefault();
+        //        if (lastUser != null)
+        //        {
+        //            return lastUser;
+        //        }
+        //        return BadRequest();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+
         private CurrentUserJWT GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;

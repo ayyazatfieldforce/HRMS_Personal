@@ -4,8 +4,6 @@ namespace HRMS_FieldForce.Models.DTOs;
 
 public class UserDTORegister
 {
-    public required string UserId { get; set; }
-
     [Required]
     [DataType(DataType.Password)]
     public required string Password { get; set; } = string.Empty;

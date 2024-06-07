@@ -42,7 +42,7 @@ namespace HRMS_FieldForce.Controllers
                 CompanyEmail = request.CompanyEmail,
                 LastName = request.LastName,
                 FirstName = request.FirstName,
-                UserId = request.UserId,
+                UserId = GetNextUserID(),
                 Role = request.Role,
                 PersonalEmail = request.PersonalEmail,
                 DateOfBirth = request.DateOfBirth,
@@ -89,6 +89,21 @@ namespace HRMS_FieldForce.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
+        private string GetNextUserID() 
+        {
+            var lastUser = _userDB.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
+            if (lastUser != null)
+            {
+                string lastTwoCharacters = lastUser.UserId.Substring(lastUser.UserId.Length - 2);
+                int value = int.Parse(lastTwoCharacters);
+                value++;
+                string nextUserID = $"FF{value}";
+                return nextUserID;
+            }
+            else
+            {
+                return "FF01";
+            }
+        }
     }
 }
