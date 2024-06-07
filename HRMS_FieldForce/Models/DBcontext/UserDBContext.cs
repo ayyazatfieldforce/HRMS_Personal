@@ -15,6 +15,8 @@ namespace HRMS_FieldForce.Models.DBcontext
         public DbSet<UserPersonalDetail> UserPersonalDetails { get; set; }
         public DbSet<UserAttendance> UserAttendances { get; set; }
         public DbSet<UserLeave> UserLeaves { get; set; }
+        public DbSet<LeaveCategory> leaveCategories { get; set; }
+        public DbSet<LeaveType> leaveTypes { get; set; }
 
         // for composite key in attendace module
         protected override void OnModelCreating(ModelBuilder modelBuilder)

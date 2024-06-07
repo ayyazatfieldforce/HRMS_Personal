@@ -83,7 +83,7 @@ namespace HRMS_FieldForce.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddDays(1), // change it 
                 signingCredentials: credentials
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);

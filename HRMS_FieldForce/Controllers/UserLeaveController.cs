@@ -4,6 +4,7 @@ using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -21,59 +22,202 @@ namespace HRMS_FieldForce.Controllers
             _context = context;
         }
 
+        // Leave Category list Controller
+        [HttpGet("LeaveCategoryList")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<LeaveCategory>> LeaveCategoryList()
+        {
+            try
+            {
+                var leaveCategories = await _context.leaveCategories.ToListAsync();
+                return Ok(leaveCategories);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("LeaveCategoryList")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateLeaveCategory(LeaveCategory leaveCategory)
+        {
+            try
+            {
+                var NewLeaveCategory = new LeaveCategory
+                {
+                    Id = leaveCategory.Id,
+                    Category = leaveCategory.Category
+                };
+                _context.leaveCategories.Add(NewLeaveCategory);
+                await _context.SaveChangesAsync();
+                return Ok(NewLeaveCategory);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("LeaveCategoryList")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteLeaveCategory(int id)
+        {
+            try
+            {
+                bool isDeleted = false;
+                var toDelete = _context.leaveCategories.Find(id);
+                if (toDelete != null)
+                {
+                    isDeleted = true;
+                    _context.leaveCategories.Entry(toDelete).State = EntityState.Deleted;
+                    _context.SaveChangesAsync();
+                    return Ok(isDeleted);
+                }
+                return BadRequest(isDeleted);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+        }
+
+        // Leave Type list Controller
+        [HttpGet("LeaveTypeList")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<LeaveCategory>> LeaveTypeList()
+        {
+            try
+            {
+                var leaveTypes = await _context.leaveTypes.ToListAsync();
+                return Ok(leaveTypes);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+        }
+
+        [HttpPost("LeaveTypeList")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateLeaveType(LeaveType leaveType)
+        {
+            try
+            {
+                var NewLeaveType = new LeaveType
+                {
+                    Id = leaveType.Id,
+                    Type = leaveType.Type
+                };
+                _context.leaveTypes.Add(leaveType);
+                await _context.SaveChangesAsync();
+                return Ok(leaveType);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("LeaveTypeList")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteLeaveType(int id)
+        {
+            try
+            {
+                bool isDeleted = false;
+                var toDelete = _context.leaveTypes.Find(id);
+                if (toDelete != null)
+                {
+                    isDeleted = true;
+                    _context.leaveTypes.Entry(toDelete).State = EntityState.Deleted;
+                    _context.SaveChangesAsync();
+                    return Ok(isDeleted);
+                }
+                return BadRequest(isDeleted);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Leave Management Controllers
         [HttpGet]
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> GetUserLeave()
+        public async Task<IActionResult> GetLeave([FromQuery] UserLeaveFilterDTO filter)
         {
-            var id = GetCurrentUser().UserID;
-            return Ok(await _context.UserLeaves.Where(user => user.UserId == id).ToListAsync());
+            try
+            {
+                IQueryable<UserLeave> query = _context.UserLeaves;
+
+                if (filter.ApplyDate != null)
+                {
+                    query = query.Where(a => a.ApplyDate == filter.ApplyDate);
+                }
+
+                if (!string.IsNullOrEmpty(filter.LeaveCategory))
+                {
+                    query = query.Where(a => a.LeaveCategory == filter.LeaveCategory);
+                }
+
+                if (!string.IsNullOrEmpty(filter.LeaveType))
+                {
+                    query = query.Where(a => a.LeaveType == filter.LeaveType);
+                }
+
+                if (!string.IsNullOrEmpty(filter.Reason))
+                {
+                    query = query.Where(a => a.Reason == filter.Reason);
+                }
+
+                if (filter.ToDate != null)
+                {
+                    query = query.Where(a => a.ToDate == filter.ToDate);
+                }
+
+                var userLeaves = await query.ToListAsync();
+
+                return Ok(userLeaves);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to retrieve attendance records: {ex.Message}");
+            }
         }
 
         [HttpPost]
         [Authorize(Roles = "User")]
         public async Task<IActionResult> ApplyLeave(UserLeaveDTO user)
         {
-            var id = GetCurrentUser().UserID;
-            var userLeave = new UserLeave
+            try
             {
-                UserId = id,
-                ApplyDate = user.ApplyDate,
-                ToDate = user.ToDate,
-                LeaveType = user.LeaveType,
-                LeaveCategory = user.LeaveCategory,
-                Reason = user.Reason,
-                status = "Pending",
-            };
-            _context.UserLeaves.Add(userLeave);
-            await _context.SaveChangesAsync();
-            return Ok(userLeave);
-
+                var id = GetCurrentUser().UserID;
+                var userLeave = new UserLeave
+                {
+                    UserId = id,
+                    ApplyDate = user.ApplyDate,
+                    ToDate = user.ToDate,
+                    LeaveType = user.LeaveType,
+                    LeaveCategory = user.LeaveCategory,
+                    Reason = user.Reason,
+                    status = "Pending",
+                };
+                _context.UserLeaves.Add(userLeave);
+                await _context.SaveChangesAsync();
+                return Ok(userLeave);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"cannot apply for the same date again. \n{ex.Message}");
+            }
         }
 
         [HttpPatch]
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> EditLeave(UserLeaveDTO user)
+        public async Task<ActionResult<UserLeave>> EditLeave(UserLeaveDTO user)
         {
             var id = GetCurrentUser().UserID;
-            //var userToEdit = _context.UserLeaves.Find(id, user.ApplyDate);
-            //if (userToEdit == null)
-            //{
-            //    return BadRequest("user not found");
-            //}
-            //var userLeave = new UserLeave
-            //{
-            //    UserId = id,
-            //    ApplyDate = user.ApplyDate,
-            //    ToDate = user.ToDate,
-            //    LeaveType = user.LeaveType,
-            //    LeaveCategory = user.LeaveCategory,
-            //    Reason = user.Reason,
-            //    status = "Pending",
-            //};
-            //_context.UserLeaves.Entry(userLeave).State = EntityState.Modified;
-            //await _context.SaveChangesAsync();
-            //return Ok(userLeave);
-
             try
             {
                 // Find the attendance record to update
@@ -134,20 +278,15 @@ namespace HRMS_FieldForce.Controllers
                     isDeleted = true;
                     _context.Entry(userToDelete).State = EntityState.Deleted;
                     _context.SaveChangesAsync();
+                    return Ok(isDeleted);
                 }
-                else
-                {
-                    isDeleted = false;
-                }
-                return Ok(isDeleted);
+                return BadRequest(isDeleted);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
-
 
         private CurrentUserJWT GetCurrentUser()
         {
