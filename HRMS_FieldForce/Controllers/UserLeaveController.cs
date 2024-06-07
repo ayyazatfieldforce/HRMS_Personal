@@ -156,15 +156,15 @@ namespace HRMS_FieldForce.Controllers
                     query = query.Where(a => a.ApplyDate == filter.ApplyDate);
                 }
 
-                if (!string.IsNullOrEmpty(filter.LeaveCategory))
-                {
-                    query = query.Where(a => a.LeaveCategory == filter.LeaveCategory);
-                }
+                //if (!string.IsNullOrEmpty(filter.LeaveCategory))
+                //{
+                //    query = query.Where(a => a.LeaveCategory == filter.LeaveCategory);
+                //}
 
-                if (!string.IsNullOrEmpty(filter.LeaveType))
-                {
-                    query = query.Where(a => a.LeaveType == filter.LeaveType);
-                }
+                //if (!string.IsNullOrEmpty(filter.LeaveType))
+                //{
+                //    query = query.Where(a => a.LeaveType == filter.LeaveType);
+                //}
 
                 if (!string.IsNullOrEmpty(filter.Reason))
                 {
@@ -193,13 +193,15 @@ namespace HRMS_FieldForce.Controllers
             try
             {
                 var id = GetCurrentUser().UserID;
+                var leaveType = _context.leaveTypes.Where(a => a.Type == user.LeaveType).FirstOrDefault();
+                var leavecategory = _context.leaveCategories.Where(a => a.Category == user.LeaveCategory).FirstOrDefault();
                 var userLeave = new UserLeave
                 {
                     UserId = id,
                     ApplyDate = user.ApplyDate,
                     ToDate = user.ToDate,
-                    LeaveType = user.LeaveType,
-                    LeaveCategory = user.LeaveCategory,
+                    LeaveTypeID = leaveType.Id,
+                    LeaveCategoryID = leavecategory.Id,
                     Reason = user.Reason,
                     status = "Pending",
                 };
@@ -238,15 +240,15 @@ namespace HRMS_FieldForce.Controllers
                     leave.ToDate = user.ToDate;
                 }
 
-                if (!string.IsNullOrEmpty(user.LeaveCategory))
-                {
-                    leave.LeaveCategory = user.LeaveCategory;
-                }
+                //if (!string.IsNullOrEmpty(user.LeaveCategory))
+                //{
+                //    leave.LeaveCategory = user.LeaveCategory;
+                //}
 
-                if (!string.IsNullOrEmpty(user.LeaveType))
-                {
-                    leave.LeaveType = user.LeaveType;
-                }
+                //if (!string.IsNullOrEmpty(user.LeaveType))
+                //{
+                //    leave.LeaveType = user.LeaveType;
+                //}
 
                 if (!string.IsNullOrEmpty(user.Reason))
                 {

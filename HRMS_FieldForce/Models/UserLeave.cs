@@ -21,11 +21,15 @@ namespace HRMS_FieldForce.Models
         [Required]
         public DateOnly ToDate { get; set; }
 
-        [Required]
-        public string LeaveCategory { get; set; }
 
-        [Required]
-        public string LeaveType { get; set; }
+        [ForeignKey("LeaveCategory")]
+        public int LeaveCategoryID { get; set; }
+        public LeaveCategory? leaveCategory { get; set; }
+
+
+        [ForeignKey("LeaveType")]
+        public int LeaveTypeID { get; set; }
+        public LeaveType? leaveType { get; set; }
 
         public string Reason { get; set; }
 
