@@ -56,42 +56,48 @@ namespace HRMS_FieldForce.Controllers
 
             return Ok("User Personal Details Added");
         }
-        /*[HttpGet("{id}")]
-        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                var userPersonalDetails = await _context.UserPersonalDetails.ToListAsync();
-                return Ok(userPersonalDetails);
-            }
-            else
-            {
-                var userDetail = await _context.UserPersonalDetails.FindAsync(id);
-                if (userDetail is null)
-                {
-                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
-                }
-                return Ok(userDetail);
-            }
-        }*/
 
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails(string id)
+        [HttpGet]
+        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails([FromQuery] string? id)
         {
-            if (string.IsNullOrEmpty(id))
-            {             
-                return BadRequest();
-            }
-            else
+            var role = HttpContext.Items["Role"] as string;
+            var userId = HttpContext.Items["UserId"] as string;
+
+            if (role == "R1" || role == "R2")
             {
-                var userDetail = await _context.UserPersonalDetails.FindAsync(id);
-                if (userDetail is null)
+                if (string.IsNullOrEmpty(id))
                 {
-                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                    var userPersonalDetails = await _context.UserPersonalDetails.ToListAsync();
+                    return Ok(userPersonalDetails);
                 }
-                return Ok(userDetail);
+                else
+                {
+                    var userDetail = await _context.UserPersonalDetails.FindAsync(id);
+                    if (userDetail is null)
+                    {
+                        return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                    }
+                    return Ok(userDetail);
+                }
             }
+            else if (role == "R3")
+            {
+                if (id == userId)
+                {
+                    var userDetail = await _context.UserPersonalDetails.FindAsync(id);
+                    if (userDetail is null)
+                    {
+                        return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                    }
+                    return Ok(userDetail);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to access this account.");
+                }
+            }
+
+            return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to access this account.");
         }
 
 
