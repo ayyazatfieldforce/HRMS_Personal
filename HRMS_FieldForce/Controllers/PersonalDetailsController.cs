@@ -56,16 +56,32 @@ namespace HRMS_FieldForce.Controllers
 
             return Ok("User Personal Details Added");
         }
-
-
-
-        [HttpGet]
-        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails([FromQuery] string? id)
+        /*[HttpGet("{id}")]
+        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
                 var userPersonalDetails = await _context.UserPersonalDetails.ToListAsync();
                 return Ok(userPersonalDetails);
+            }
+            else
+            {
+                var userDetail = await _context.UserPersonalDetails.FindAsync(id);
+                if (userDetail is null)
+                {
+                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                }
+                return Ok(userDetail);
+            }
+        }*/
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {             
+                return BadRequest();
             }
             else
             {
