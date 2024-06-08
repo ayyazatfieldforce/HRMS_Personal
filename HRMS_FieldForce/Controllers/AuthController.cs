@@ -29,14 +29,20 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPost("register")]
-
         public async Task<ActionResult<User>> Register(UserDto request)
         {
-            var dbUser = await _context.Users.FindAsync(request.CompanyEmail);
+            var role = HttpContext.Items["Role"] as string;
+
+            if (role != "R1" && role != "R2")
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to register a new user.");
+            }
+
+            var dbUser = await _context.Users.FirstOrDefaultAsync(u => u.CompanyEmail == request.CompanyEmail);
 
             if (dbUser is not null)
             {
-                return BadRequest($"Team with id {dbUser.CompanyEmail} already exists.");
+                return BadRequest($"User with email {dbUser.CompanyEmail} already exists.");
             }
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -56,11 +62,9 @@ namespace HRMS_FieldForce.Controllers
             _context.Users.Add(_user);
             await _context.SaveChangesAsync();
 
-
-            await _context.SaveChangesAsync();
-            return Ok("User Added Succfuly");
-
+            return Ok("User Added Successfully");
         }
+
 
         [HttpPost("login")]
 

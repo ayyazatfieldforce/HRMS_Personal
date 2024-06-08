@@ -22,40 +22,52 @@ namespace HRMS_FieldForce.Controllers
         [HttpPost]
         public async Task<ActionResult<UserPersonalDetail>> PostUserPersonalDetail(UserPersonalDetailDTO request)
         {
-
-            var dbUser = await _context.Users.FindAsync(request.UserId);
-
-            if (dbUser is null)
+            try
             {
-                return BadRequest($"User with id {request.UserId} doesnot exists.");
+                var role = HttpContext.Items["Role"] as string;
+
+                if (role != "R1" && role != "R2")
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to add user personal details.");
+                }
+
+                var dbUser = await _context.Users.FindAsync(request.UserId);
+
+                if (dbUser == null)
+                {
+                    return BadRequest($"User with id {request.UserId} does not exist.");
+                }
+
+                string userId = request.UserId;
+
+                var userPersonalDetail = new UserPersonalDetail
+                {
+                    UserId = userId,
+                    FatherName = request.FatherName,
+                    CNIC = request.CNIC,
+                    Phone = request.Phone,
+                    EmergencyContact = request.EmergencyContact,
+                    EmployeeStatus = request.EmployeeStatus,
+                    Branch = request.Branch,
+                    Department = request.Department,
+                    Designation = request.Designation,
+                    JobGrade = request.JobGrade,
+                    JoiningDate = request.JoiningDate,
+                    Address = request.Address,
+                    PermanentAddress = request.PermanentAddress
+                };
+
+                _context.UserPersonalDetails.Add(userPersonalDetail);
+                await _context.SaveChangesAsync();
+
+                return Ok("User Personal Details Added");
             }
-
-            // Assume that UserId is provided in the DTO for simplicity.
-            // In a real-world scenario, you might get it from the authenticated user context.
-            string userId = request.UserId;
-
-            var userPersonalDetail = new UserPersonalDetail
+            catch 
             {
-                UserId = userId,
-                FatherName = request.FatherName,
-                CNIC = request.CNIC,
-                Phone = request.Phone,
-                EmergencyContact = request.EmergencyContact,
-                EmployeeStatus = request.EmployeeStatus,
-                Branch = request.Branch,
-                Department = request.Department,
-                Designation = request.Designation,
-                JobGrade = request.JobGrade,
-                JoiningDate = request.JoiningDate,
-                Address = request.Address,
-                PermanentAddress = request.PermanentAddress
-            };
-
-            _context.UserPersonalDetails.Add(userPersonalDetail);
-            await _context.SaveChangesAsync();
-
-            return Ok("User Personal Details Added");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding user personal details. Please try again later.");
+            }
         }
+
 
         [HttpGet]
         public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails([FromQuery] string? id)
@@ -106,6 +118,13 @@ namespace HRMS_FieldForce.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<UserPersonalDetail>> PutUserPersonalDetail(string id, UserPersonalDetailDTO request)
         {
+            var role = HttpContext.Items["Role"] as string;
+
+            if (role != "R1" && role != "R2")
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to update user personal details.");
+            }
+
             if (id != request.UserId)
             {
                 return BadRequest("User ID mismatch.");
@@ -141,16 +160,22 @@ namespace HRMS_FieldForce.Controllers
             {
                 if (!UserPersonalDetailExists(id))
                 {
-                    return NotFound();
+                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
                 }
                 else
                 {
-                    throw;
+                    return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the record. Please try again later.");
                 }
+            }
+            catch 
+            {
+      
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the record. Please try again later.");
             }
 
             return NoContent();
         }
+
         private bool UserPersonalDetailExists(string id)
         {
             return _context.UserPersonalDetails.Any(e => e.UserId == id);
@@ -159,18 +184,32 @@ namespace HRMS_FieldForce.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserPersonalDetail(string id)
         {
-            var userPersonalDetail = await _context.UserPersonalDetails.FindAsync(id);
-            if (userPersonalDetail == null)
+            var role = HttpContext.Items["Role"] as string;
+
+            if (role != "R1" && role != "R2")
             {
-                return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete user personal details.");
             }
 
-            _context.UserPersonalDetails.Remove(userPersonalDetail);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var userPersonalDetail = await _context.UserPersonalDetails.FindAsync(id);
+                if (userPersonalDetail == null)
+                {
+                    return NotFound($"UserPersonalDetail with UserId {id} not found.");
+                }
 
-            return NoContent();
-      
+                _context.UserPersonalDetails.Remove(userPersonalDetail);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch
+            { 
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the record. Please try again later.");
+            }
         }
+
 
 
     }
