@@ -17,12 +17,18 @@ namespace HRMS_FieldForce.Controllers
             _context = userDBContext;
         }
 
-   
+
         [HttpPost("checkin")]
         public async Task<IActionResult> CheckIn([FromBody] AttendanceDTO attendanceDTO)
         {
             try
             {
+                var userIdFromContext = HttpContext.Items["UserId"] as string;
+
+                if (userIdFromContext == null || userIdFromContext != attendanceDTO.UserId)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to check in for this user.");
+                }
 
                 var attendance = new Attendance
                 {
@@ -31,7 +37,6 @@ namespace HRMS_FieldForce.Controllers
                     CheckInTime = attendanceDTO.CheckInTime,
                     WorkFrom = attendanceDTO.WorkFrom
                 };
-
 
                 _context.Attendances.Add(attendance);
                 await _context.SaveChangesAsync();
@@ -43,19 +48,27 @@ namespace HRMS_FieldForce.Controllers
                 return BadRequest($"Failed to check in: {ex.Message}");
             }
         }
+
         [HttpPost("checkout")]
         public async Task<IActionResult> CheckOut([FromBody] AttendanceDTO attendanceDTO)
         {
             try
             {
-                // Finding the attendance entry for the user and date
-                var attendance = await _context.Attendances.FindAsync(attendanceDTO.UserId, attendanceDTO.Date);
+                var userIdFromContext = HttpContext.Items["UserId"] as string;
+
+                if (userIdFromContext == null || userIdFromContext != attendanceDTO.UserId)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to check out for this user.");
+                }
+
+                var attendance = await _context.Attendances
+                    .FirstOrDefaultAsync(a => a.UserId == attendanceDTO.UserId && a.Date == attendanceDTO.Date);
+
                 if (attendance == null)
                 {
                     return NotFound("Attendance entry not found.");
                 }
 
-                // Updating check-out time
                 attendance.CheckOutTime = attendanceDTO.CheckOutTime;
 
                 _context.Entry(attendance).State = EntityState.Modified;
@@ -68,17 +81,37 @@ namespace HRMS_FieldForce.Controllers
                 return BadRequest($"Failed to check out: {ex.Message}");
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAttendance([FromQuery] AttendanceFilterDTO filter)
         {
             try
             {
+                var role = HttpContext.Items["Role"] as string;
+                var userIdFromContext = HttpContext.Items["UserId"] as string;
+
                 IQueryable<Attendance> query = _context.Attendances;
 
-                // Apply filters if provided
-                if (!string.IsNullOrEmpty(filter.UserId))
+                if (role == "R1" || role == "R2")
                 {
-                    query = query.Where(a => a.UserId == filter.UserId);
+                    if (!string.IsNullOrEmpty(filter.UserId))
+                    {
+                        query = query.Where(a => a.UserId == filter.UserId);
+                    }
+                }
+                else if (role == "R3")
+                {
+                    if (!string.IsNullOrEmpty(filter.UserId))
+                    {
+                        if (filter.UserId != userIdFromContext)
+                        {
+                            return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to search for this user.");
+                        }
+                    }
+                    else
+                    {
+                        query = query.Where(a => a.UserId == userIdFromContext);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(filter.Date))
@@ -107,22 +140,28 @@ namespace HRMS_FieldForce.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Failed to retrieve attendance records: {ex.Message}");
+                return BadRequest($"Failed to retrieve attendance: {ex.Message}");
             }
         }
+
         [HttpDelete]
         public async Task<IActionResult> DeleteAttendance(string id, string date)
         {
             try
             {
-                // Find the attendance record to delete
+                var role = HttpContext.Items["Role"] as string;
+
+                if (role != "R1" && role != "R2")
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete attendance records.");
+                }
+
                 var attendance = await _context.Attendances.FindAsync(id, date);
                 if (attendance == null)
                 {
                     return NotFound("Attendance record not found.");
                 }
 
-                // Remove the attendance record
                 _context.Attendances.Remove(attendance);
                 await _context.SaveChangesAsync();
 
@@ -133,11 +172,19 @@ namespace HRMS_FieldForce.Controllers
                 return BadRequest($"Failed to delete attendance record: {ex.Message}");
             }
         }
+
         [HttpPut("{id}/{date}")]
         public async Task<IActionResult> UpdateAttendance(string id, string date, [FromBody] AttendanceDTO updateDto)
         {
             try
             {
+                var role = HttpContext.Items["Role"] as string;
+
+                if (role != "R1" && role != "R2")
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to update attendance records.");
+                }
+
                 // Find the attendance record to update
                 var attendance = await _context.Attendances.FindAsync(id, date);
                 if (attendance == null)
@@ -171,6 +218,7 @@ namespace HRMS_FieldForce.Controllers
                 return BadRequest($"Failed to update attendance record: {ex.Message}");
             }
         }
+
     }
 
 }
