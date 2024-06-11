@@ -1,8 +1,10 @@
 ﻿using HRMS_FieldForce.Data;
+using HRMS_FieldForce.Enums;
 using HRMS_FieldForce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 
 namespace HRMS_FieldForce.Controllers
 {
@@ -32,7 +34,7 @@ namespace HRMS_FieldForce.Controllers
                 var users = await _context.Users.ToListAsync();
                 return Ok(users);
             }
-            catch 
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving users. Please try again later.");
             }
@@ -40,12 +42,7 @@ namespace HRMS_FieldForce.Controllers
         [HttpGet("Search")]
         public async Task<ActionResult<IEnumerable<object>>> SearchUsers([FromQuery] string? searchText)
         {
-            var role = HttpContext.Items["Role"] as string;
 
-            if (role != "R1" && role != "R2")
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to access this resource.");
-            }
 
             try
             {
@@ -87,9 +84,42 @@ namespace HRMS_FieldForce.Controllers
 
                 return Ok(result);
             }
-            catch 
+            catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while searching users. Please try again later.");
+            }
+        }
+        [HttpGet("GetOtherEmployeeInfo/{id}")]
+        public async Task<ActionResult> GetOtherEmployeeInfo(string id)
+        {
+            try
+            {
+                var EmployeeInfo = await _context.Users.FindAsync(id);
+                var role = await _context.UserPersonalDetails
+                                .Where(u => u.UserId == id)
+                                .Select(u => u.Designation)
+                                .FirstOrDefaultAsync();
+
+                if (EmployeeInfo is null||role is null)
+                {
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, $"UserBasicDetail with UserId {id} not found.");
+                }
+                var FilteredInfo = new
+                {
+
+                    Email = EmployeeInfo.PersonalEmail,
+                    FName = EmployeeInfo.FirstName,
+                    LName = EmployeeInfo.LastName,
+                    Role=   role
+
+                };
+
+                return StatusCode((int)HTTPCallStatus.Success, FilteredInfo);
+
+            }
+            catch
+            { 
+                return StatusCode((int)HTTPCallStatus.Error, "An error occurred while processing your request.");
             }
         }
 
@@ -185,7 +215,6 @@ namespace HRMS_FieldForce.Controllers
             }
             catch 
             {
-                // Log the exception (ex) if necessary
                 return StatusCode(500, "Internal server error. Please try again later.");
             }
         }

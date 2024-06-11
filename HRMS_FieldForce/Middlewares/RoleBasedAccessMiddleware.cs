@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using HRMS_FieldForce.Enums;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 namespace HRMS_FieldForce.Middlewares
 {
     public class RoleBasedAccessMiddleware
@@ -22,6 +18,7 @@ namespace HRMS_FieldForce.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
+ 
             var path = context.Request.Path.Value;
             if (path.StartsWith("/swagger") || path.StartsWith("/api-docs")|| path.StartsWith("/api/Auth/login"))
             {
@@ -54,15 +51,19 @@ namespace HRMS_FieldForce.Middlewares
                 }
                 catch
                 {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Invalid Token");
+                    context.Response.StatusCode =(int) HTTPCallStatus.NotAuthenticated;
+
+
+
+                    await context.Response.WriteAsync($"{(int)HTTPCallStatus.NotAuthenticated}: Token is not authenticated");
                     return;
                 }
             }
             else
             {
-                context.Response.StatusCode = 401;
-                await context.Response.WriteAsync("Token is missing");
+                context.Response.StatusCode = (int)HTTPCallStatus.NotAuthenticated;
+                
+                await context.Response.WriteAsync($"{(int)HTTPCallStatus.NotAuthenticated}: Token is missing");
                 return;
             }
 
