@@ -1,5 +1,6 @@
 ﻿using HRMS_FieldForce.Data;
 using HRMS_FieldForce.DTOs;
+using HRMS_FieldForce.Enums;
 using HRMS_FieldForce.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,16 +31,16 @@ namespace HRMS_FieldForce.Controllers
                 if (string.IsNullOrEmpty(id))
                 {
                     var userBasicDetails = await _context.UserBasicDetails.ToListAsync();
-                    return Ok(userBasicDetails);
+                    return StatusCode((int)HTTPCallStatus.Success, userBasicDetails);
                 }
                 else
                 {
                     var userDetail = await _context.UserBasicDetails.FindAsync(id);
                     if (userDetail is null)
                     {
-                        return NotFound($"UserBasicDetail with UserId {id} not found.");
+                        return StatusCode((int)HTTPCallStatus.InvalidRequest, $"UserBasicDetail with UserId {id} not found.");
                     }
-                    return Ok(userDetail);
+                    return StatusCode((int)HTTPCallStatus.Success, userDetail);
                 }
             }
             else if (role == "R3")
@@ -50,18 +51,18 @@ namespace HRMS_FieldForce.Controllers
                     var userDetail = await _context.UserBasicDetails.FindAsync(id);
                     if (userDetail is null)
                     {
-                        return NotFound($"UserBasicDetail with UserId {id} not found.");
+                        return StatusCode((int)HTTPCallStatus.InvalidRequest, $"UserBasicDetail with UserId {id} not found.");
                     }
-                    return Ok(userDetail);
+                    return StatusCode((int)HTTPCallStatus.Success, userDetail);
                 }
                 else
                 {
-                    return Forbid("You do not have permission to access this user's details.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to access this user's details.");
                 }
             }
             else
             {
-                return Forbid("You do not have permission to access this resource.");
+                return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to access this resource.");
             }
         }
 
@@ -77,14 +78,14 @@ namespace HRMS_FieldForce.Controllers
 
                 if (role != "R1" && role != "R2")
                 {
-                    return Forbid("You do not have permission to add user basic details.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to access this resource.");
                 }
 
                 var dbUser = await _context.Users.FindAsync(request.UserId);
 
                 if (dbUser is null)
                 {
-                    return BadRequest($"User with id {request.UserId} does not exist.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, $"UserBasicDetail with UserId {request.UserId} not found.");
                 }
 
                 var userBasicDetail = new UserBasicDetail
@@ -105,11 +106,11 @@ namespace HRMS_FieldForce.Controllers
                 _context.UserBasicDetails.Add(userBasicDetail);
                 await _context.SaveChangesAsync();
 
-                return Ok(userBasicDetail);
+                return StatusCode((int)HTTPCallStatus.Success, userBasicDetail);
             }
             catch 
             {
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode((int) HTTPCallStatus.Error, "An error occurred while processing your request.");
             }
         }
 
@@ -124,25 +125,25 @@ namespace HRMS_FieldForce.Controllers
 
                 if (role != "R1" && role != "R2")
                 {
-                    return Forbid("You do not have permission to update user basic details.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to access this resource.");
                 }
 
                 if (id != request.UserId)
                 {
-                    return BadRequest("User ID mismatch.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to access this resource.");
                 }
 
                 var dbUser = await _context.Users.FindAsync(request.UserId);
 
                 if (dbUser is null)
                 {
-                    return NotFound($"User with id {request.UserId} does not exist.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, $"User with id {request.UserId} does not exist.");
                 }
 
                 var userBasicDetails = await _context.UserBasicDetails.FindAsync(id);
                 if (userBasicDetails is null)
                 {
-                    return NotFound($"UserBasicDetail with UserId {id} not found.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, $"UserBasicDetail with UserId {id} not found.");
                 }
 
                 userBasicDetails.WorkingHours = request.WorkingHours;
@@ -159,11 +160,11 @@ namespace HRMS_FieldForce.Controllers
                 _context.Entry(userBasicDetails).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return Ok(userBasicDetails);
+                return StatusCode((int)HTTPCallStatus.Success, userBasicDetails);
             }
             catch 
             {
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode((int)HTTPCallStatus.Error, "An error occurred while processing your request.");
             }
         }
 
@@ -178,23 +179,23 @@ namespace HRMS_FieldForce.Controllers
 
                 if (role != "R1" && role != "R2")
                 {
-                    return Forbid("You do not have permission to delete user basic details.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to access this resource.");
                 }
 
                 var userToDelete = await _context.UserBasicDetails.FindAsync(id);
                 if (userToDelete == null)
                 {
-                    return NotFound($"UserBasicDetail with UserId {id} not found.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, $"UserBasicDetail with UserId {id} not found.");
                 }
 
                 _context.Entry(userToDelete).State = EntityState.Deleted;
                 await _context.SaveChangesAsync();
 
-                return Ok(true);
+                return StatusCode((int)HTTPCallStatus.Success, true);
             }
             catch
             {
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode((int)HTTPCallStatus.Error, "An error occurred while processing your request.");
             }
         }
 

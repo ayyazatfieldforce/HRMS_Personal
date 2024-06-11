@@ -24,7 +24,24 @@ namespace HRMS_FieldForce.Controllers
         {
             try
             {
+
                 var role = HttpContext.Items["Role"] as string;
+
+                var module = await _context.Modules.FirstOrDefaultAsync(m => m.ModuleName == "addPersonalDetails");
+                if (module == null)
+                {
+                    return BadRequest("Module 13 does not exist.");
+                }
+
+                bool hasPermission = await _context.Permissions.AnyAsync(p =>
+                    p.Role == role &&
+                    p.Module == module.ModuleID &&
+                    p.Permission == 1);
+
+                if (!hasPermission)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have the required permission to add user personal details.");
+                }
 
                 if (role != "R1" && role != "R2")
                 {

@@ -17,6 +17,10 @@ namespace HRMS_FieldForce.Data
         public DbSet<Role> Roles { get; set; }
 
         public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<Permission> Actions { get; set; }
+        public DbSet<Module> Modules { get; set; }
+        public DbSet<GrantPermission> Permissions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +28,9 @@ namespace HRMS_FieldForce.Data
 
             modelBuilder.Entity<Attendance>()
                 .HasKey(a => new { a.UserId, a.Date });
+
+            modelBuilder.Entity<GrantPermission>()
+                .HasKey(a => new { a.Role, a.Module,a.Permission });
         }
     }
 }

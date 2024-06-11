@@ -1,7 +1,7 @@
 ﻿using HRMS_FieldForce.Data;
 using HRMS_FieldForce.DTOs;
+using HRMS_FieldForce.Enums;
 using HRMS_FieldForce.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -35,14 +35,14 @@ namespace HRMS_FieldForce.Controllers
 
             if (role != "R1" && role != "R2")
             {
-                return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to register a new user.");
+                return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to register a new user.");
             }
 
             var dbUser = await _context.Users.FirstOrDefaultAsync(u => u.CompanyEmail == request.CompanyEmail);
 
             if (dbUser is not null)
             {
-                return BadRequest($"User with email {dbUser.CompanyEmail} already exists.");
+                return StatusCode((int)HTTPCallStatus.Duplicate, $"User with email {dbUser.CompanyEmail} already exists.");
             }
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -62,7 +62,7 @@ namespace HRMS_FieldForce.Controllers
             _context.Users.Add(_user);
             await _context.SaveChangesAsync();
 
-            return Ok("User Added Successfully");
+            return StatusCode((int)HTTPCallStatus.Success, "User Added Successfully");
         }
 
 
@@ -75,17 +75,17 @@ namespace HRMS_FieldForce.Controllers
 
             if (dbUser is null)
             {
-                return BadRequest("Company Email or Password  is incorrect");
+                return StatusCode((int)HTTPCallStatus.InvalidRequest, "Company Email or Password  is incorrect");
             }
             if (!BCrypt.Net.BCrypt.Verify(request.Password, dbUser.HashPassword))
             {
-                return BadRequest("Company Email or Password  is incorrect");
+                return StatusCode((int)HTTPCallStatus.InvalidRequest, "Company Email or Password  is incorrect");
             }
 
             var token = CreateToken(dbUser);
 
 
-            return Ok(token);
+            return StatusCode((int)HTTPCallStatus.Success, token);
 
 
 
@@ -107,7 +107,7 @@ namespace HRMS_FieldForce.Controllers
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials:creds
-                );  
+                );
 
             var jwt=new JwtSecurityTokenHandler().WriteToken(token);
 

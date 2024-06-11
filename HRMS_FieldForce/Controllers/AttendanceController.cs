@@ -1,8 +1,9 @@
 ﻿using HRMS_FieldForce.Data;
 using HRMS_FieldForce.DTOs;
-using Microsoft.AspNetCore.Http;
+using HRMS_FieldForce.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using static HRMS_FieldForce.Models.Attendence;
 
 namespace HRMS_FieldForce.Controllers
@@ -27,8 +28,9 @@ namespace HRMS_FieldForce.Controllers
 
                 if (userIdFromContext == null || userIdFromContext != attendanceDTO.UserId)
                 {
-                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to check in for this user.");
+                    return StatusCode((int) HTTPCallStatus.NotAuthenticated, "You do not have permission to check in for this user.");
                 }
+
 
                 var attendance = new Attendance
                 {
@@ -41,12 +43,14 @@ namespace HRMS_FieldForce.Controllers
                 _context.Attendances.Add(attendance);
                 await _context.SaveChangesAsync();
 
-                return Ok("Check-in successful.");
+                return StatusCode((int)HTTPCallStatus.Success, "Check-in successful.");
+
             }
             catch (Exception ex)
             {
-                return BadRequest($"Failed to check in: {ex.Message}");
+                return StatusCode((int)HTTPCallStatus.Error,"Something went wrong");
             }
+
         }
 
         [HttpPost("checkout")]
@@ -105,7 +109,7 @@ namespace HRMS_FieldForce.Controllers
                     {
                         if (filter.UserId != userIdFromContext)
                         {
-                            return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to search for this user.");
+                            return StatusCode((int) HTTPCallStatus.InvalidRequest, "You do not have permission to search for this user.");
                         }
                     }
                     else
@@ -136,11 +140,11 @@ namespace HRMS_FieldForce.Controllers
 
                 var attendances = await query.ToListAsync();
 
-                return Ok(attendances);
+                return StatusCode((int)HTTPCallStatus.Success, "You have permission to search.");
             }
             catch (Exception ex)
             {
-                return BadRequest($"Failed to retrieve attendance: {ex.Message}");
+                return StatusCode((int)HTTPCallStatus.Error, "Something went wrong.");
             }
         }
 
@@ -153,23 +157,25 @@ namespace HRMS_FieldForce.Controllers
 
                 if (role != "R1" && role != "R2")
                 {
-                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to delete attendance records.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permissions..");
                 }
 
                 var attendance = await _context.Attendances.FindAsync(id, date);
                 if (attendance == null)
                 {
-                    return NotFound("Attendance record not found.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "Attendance record not found.");
+                
                 }
 
                 _context.Attendances.Remove(attendance);
                 await _context.SaveChangesAsync();
-
-                return Ok("Attendance record deleted successfully.");
+                return StatusCode((int)HTTPCallStatus.Success, "Attendance record deleted successfully.");
+                
             }
             catch (Exception ex)
             {
-                return BadRequest($"Failed to delete attendance record: {ex.Message}");
+                return StatusCode((int)HTTPCallStatus.Error,$"Failed to delete attendance record: {ex.Message}");
+                
             }
         }
 
@@ -182,14 +188,14 @@ namespace HRMS_FieldForce.Controllers
 
                 if (role != "R1" && role != "R2")
                 {
-                    return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to update attendance records.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "You do not have permission to update attendance records.");
                 }
 
                 // Find the attendance record to update
                 var attendance = await _context.Attendances.FindAsync(id, date);
                 if (attendance == null)
                 {
-                    return NotFound("Attendance record not found.");
+                    return StatusCode((int)HTTPCallStatus.InvalidRequest, "Attendance record not found.");
                 }
 
                 // Update the fields if provided
@@ -211,11 +217,11 @@ namespace HRMS_FieldForce.Controllers
                 // Save changes
                 await _context.SaveChangesAsync();
 
-                return Ok("Attendance record updated successfully.");
+                return StatusCode((int)HTTPCallStatus.Success, "Attendance record updated successfully.");
             }
             catch (Exception ex)
             {
-                return BadRequest($"Failed to update attendance record: {ex.Message}");
+                return StatusCode((int)HTTPCallStatus.Error, $"Failed to update attendance record: {ex.Message}");
             }
         }
 
