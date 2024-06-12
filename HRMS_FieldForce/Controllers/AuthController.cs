@@ -3,6 +3,7 @@ using HRMS_FieldForce.Models;
 using HRMS_FieldForce.Models.DBcontext;
 using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -97,6 +98,24 @@ namespace HRMS_FieldForce.Controllers
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        //[HttpPost]
+        //[Route("logout")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public IActionResult Logout()
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        // invalidating the JWT token or removing it from a blacklist.
+
+        //        Response.Cookies.Delete("Bearer");
+
+        //        return Ok(new { message = "Successfully logged out" });
+        //    }
+
+        //    return BadRequest(new { message = "User is not authenticated" });
+        //}
 
         private string GetNextUserID() 
         {
