@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240607111255_test1")]
+    [Migration("20240612081805_test1")]
     partial class test1
     {
         /// <inheritdoc />
@@ -106,11 +106,11 @@ namespace HRMS_FieldForce.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnOrder(1);
 
-                    b.Property<TimeOnly>("checkIn")
-                        .HasColumnType("time(6)");
+                    b.Property<DateTime>("checkIn")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<TimeOnly>("checkOut")
-                        .HasColumnType("time(6)");
+                    b.Property<DateTime>("checkOut")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("UserId", "day");
 
@@ -175,16 +175,8 @@ namespace HRMS_FieldForce.Migrations
                         .HasColumnType("date")
                         .HasColumnOrder(1);
 
-                    b.Property<string>("LeaveCategory")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<int>("LeaveCategoryID")
                         .HasColumnType("int");
-
-                    b.Property<string>("LeaveType")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<int>("LeaveTypeID")
                         .HasColumnType("int");

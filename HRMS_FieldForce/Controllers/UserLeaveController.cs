@@ -23,9 +23,9 @@ namespace HRMS_FieldForce.Controllers
         }
 
         // Leave Category list Controller
-        [HttpGet("LeaveCategoryList")]
-        [Authorize(Roles = "User")]
-        public async Task<ActionResult<LeaveCategory>> LeaveCategoryList()
+        //[HttpGet("LeaveCategoryList")]
+        //[Authorize(Roles = "User")]
+        private async Task<ActionResult<LeaveCategory>> LeaveCategoryList()
         {
             try
             {
@@ -190,29 +190,23 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> ApplyLeave(UserLeaveDTO user)
         {
-            try
+            var id = GetCurrentUser().UserID;
+            var leaveType = _context.leaveTypes.Where(a => a.Type == user.LeaveType).FirstOrDefault();
+            var leavecategory = _context.leaveCategories.Where(a => a.Category == user.LeaveCategory).FirstOrDefault();
+            var userLeaves = new UserLeave
             {
-                var id = GetCurrentUser().UserID;
-                var leaveType = _context.leaveTypes.Where(a => a.Type == user.LeaveType).FirstOrDefault();
-                var leavecategory = _context.leaveCategories.Where(a => a.Category == user.LeaveCategory).FirstOrDefault();
-                var userLeave = new UserLeave
-                {
-                    UserId = id,
-                    ApplyDate = user.ApplyDate,
-                    ToDate = user.ToDate,
-                    LeaveTypeID = leaveType.Id,
-                    LeaveCategoryID = leavecategory.Id,
-                    Reason = user.Reason,
-                    status = "Pending",
-                };
-                _context.UserLeaves.Add(userLeave);
-                await _context.SaveChangesAsync();
-                return Ok(userLeave);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"cannot apply for the same date again. \n{ex.Message}");
-            }
+                UserId = id,
+                ApplyDate = user.ApplyDate,
+                ToDate = user.ToDate,
+                LeaveTypeID = leaveType.Id,
+                LeaveCategoryID = leavecategory.Id,
+                Reason = user.Reason,
+                status = "Pending",
+            };
+            await _context.UserLeaves.AddAsync(userLeaves);
+            await _context.SaveChangesAsync();
+            return Ok(userLeaves);
+            
         }
 
         [HttpPatch]
@@ -288,6 +282,26 @@ namespace HRMS_FieldForce.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPatch("LeaveApproval")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<UserLeave>> ApproveLeave(string id, DateOnly applyDate)
+        {
+            var user = await _context.UserLeaves.FindAsync(id, applyDate);
+            if (user == null)
+            {
+                return NotFound($"Leave record of {id} not found.");
+            }
+            if (user.status != null)
+            {
+                user.status = "Approved";
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(user);
+            
         }
 
         //[HttpGet("maxID")]

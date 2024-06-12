@@ -79,8 +79,8 @@ namespace HRMS_FieldForce.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     day = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    checkIn = table.Column<TimeOnly>(type: "time(6)", nullable: false),
-                    checkOut = table.Column<TimeOnly>(type: "time(6)", nullable: false)
+                    checkIn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    checkOut = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -139,11 +139,7 @@ namespace HRMS_FieldForce.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ApplyDate = table.Column<DateOnly>(type: "date", nullable: false),
                     ToDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    LeaveCategory = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     LeaveCategoryID = table.Column<int>(type: "int", nullable: false),
-                    LeaveType = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     LeaveTypeID = table.Column<int>(type: "int", nullable: false),
                     Reason = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),

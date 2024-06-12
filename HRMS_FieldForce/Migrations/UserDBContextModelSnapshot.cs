@@ -103,11 +103,11 @@ namespace HRMS_FieldForce.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnOrder(1);
 
-                    b.Property<TimeOnly>("checkIn")
-                        .HasColumnType("time(6)");
+                    b.Property<DateTime>("checkIn")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<TimeOnly>("checkOut")
-                        .HasColumnType("time(6)");
+                    b.Property<DateTime>("checkOut")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("UserId", "day");
 

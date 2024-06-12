@@ -2,6 +2,7 @@
 using HRMS_FieldForce.Models;
 using HRMS_FieldForce.Models.DBcontext;
 using HRMS_FieldForce.Models.DTOs;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -70,6 +71,14 @@ namespace HRMS_FieldForce.Controllers
             return Ok(token);
         }
 
+        //[HttpPost("logout")]
+        //public async Task<IActionResult> Logout()
+        //{
+        //    await _tokenManager.DeactivateCurrentAsync();
+
+        //    return NoContent();
+        //}
+
         private string CreateToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Appsettings:Token"]!));
@@ -102,7 +111,7 @@ namespace HRMS_FieldForce.Controllers
             }
             else
             {
-                return "FF01";
+                return "FF1";
             }
         }
     }
