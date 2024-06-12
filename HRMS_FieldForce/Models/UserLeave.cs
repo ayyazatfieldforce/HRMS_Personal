@@ -10,8 +10,6 @@ namespace HRMS_FieldForce.Models
         [Required]
         [ForeignKey("User")]
         public required string UserId { get; set; }
-
-        // Navigation property
         public User? User { get; set; }
 
         [Key, Column(Order = 1)]
@@ -21,11 +19,9 @@ namespace HRMS_FieldForce.Models
         [Required]
         public DateOnly ToDate { get; set; }
 
-
         [ForeignKey("LeaveCategory")]
         public int LeaveCategoryID { get; set; }
         public LeaveCategory? leaveCategory { get; set; }
-
 
         [ForeignKey("LeaveType")]
         public int LeaveTypeID { get; set; }
