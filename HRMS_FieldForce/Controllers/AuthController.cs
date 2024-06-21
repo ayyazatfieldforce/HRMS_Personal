@@ -5,6 +5,7 @@ using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,7 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPost("register")]
+        [EnableCors("AllowOrigin")]
         public async Task<ActionResult<User>> Register (UserDTORegister request)
         {
             var dbUser = await _userDB.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);
@@ -57,6 +59,7 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpPost("login")]
+        [EnableCors("AllowOrigin")]
         public async Task<ActionResult<string>> Login (UserDTOLogin request)
         {
             var dbUser = await _userDB.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);

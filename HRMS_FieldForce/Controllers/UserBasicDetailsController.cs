@@ -2,6 +2,7 @@
 using HRMS_FieldForce.Models.DBcontext;
 using HRMS_FieldForce.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,21 +22,24 @@ namespace HRMS_FieldForce.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "User")]
+        [EnableCors("AllowOrigin")]
+        //[Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> GetUserDetails()
         {
-            string id = GetCurrentUser().UserID;
-            var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
-            if (userDetail is null)
-            {
-                return NotFound($"UserPersonalDetail with UserId {id} not found.");
-            }
-            return Ok(userDetail);
+            //string id = GetCurrentUser().UserID;
+            //var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
+            //if (userDetail is null)
+            //{
+            //    return NotFound($"UserPersonalDetail with UserId {id} not found.");
+            //}
+            //return Ok(userDetail);
+            return Ok(await _UserDBContext.UserBasicDetails.ToListAsync());
         }
 
 
         [HttpPost]
-        [Authorize(Roles = "User")]
+        [EnableCors("AllowOrigin")]
+        //[Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> AddUserBasicDetails(UserBasicDetailsDTO request)
         {
             string id = GetCurrentUser().UserID;
