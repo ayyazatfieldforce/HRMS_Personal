@@ -23,7 +23,7 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpGet]
         [EnableCors("AllowOrigin")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> GetUserDetails()
         {
             //string id = GetCurrentUser().UserID;
@@ -39,7 +39,7 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpPost]
         [EnableCors("AllowOrigin")]
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> AddUserBasicDetails(UserBasicDetailsDTO request)
         {
             string id = GetCurrentUser().UserID;

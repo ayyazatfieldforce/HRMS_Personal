@@ -60,7 +60,7 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpPost("login")]
         [EnableCors("AllowOrigin")]
-        public async Task<ActionResult<string>> Login (UserDTOLogin request)
+        public async Task<IActionResult> Login ([FromBody] UserDTOLogin request)
         {
             var dbUser = await _userDB.Users.SingleOrDefaultAsync(user => user.CompanyEmail == request.CompanyEmail);
             if (dbUser == null)
@@ -72,7 +72,9 @@ namespace HRMS_FieldForce.Controllers
                 return BadRequest("Username or Password is Wrong");
             }
             var token = CreateToken(dbUser);
-            return Ok(token);
+            var role = dbUser.Role;
+            return Ok(new { accessToken = token, roles = role });
+            //return Ok(token);
         }
 
         //[HttpPost("logout")]
@@ -96,7 +98,7 @@ namespace HRMS_FieldForce.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: userClaims,
-                expires: DateTime.Now.AddDays(1), // change it 
+                expires: DateTime.Now.AddSeconds(40), // change it 
                 signingCredentials: credentials
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -125,16 +127,30 @@ namespace HRMS_FieldForce.Controllers
             var lastUser = _userDB.Users.OrderByDescending(u => u.UserId).FirstOrDefault();
             if (lastUser != null)
             {
-                string lastTwoCharacters = lastUser.UserId.Substring(lastUser.UserId.Length - 2);
-                int value = int.Parse(lastTwoCharacters);
+                int value = int.Parse(ExtractNumerics(lastUser.UserId));
                 value++;
                 string nextUserID = $"FF{value}";
                 return nextUserID;
             }
             else
             {
-                return "FF1";
+                return "FF01";
             }
+        }
+
+        private string ExtractNumerics(string input)
+        {
+            StringBuilder numericString = new StringBuilder();
+
+            foreach (char c in input)
+            {
+                if (char.IsDigit(c))
+                {
+                    numericString.Append(c);
+                }
+            }
+
+            return numericString.ToString();
         }
     }
 }

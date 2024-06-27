@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMS_FieldForce.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240612081805_test1")]
+    [Migration("20240625120424_test1")]
     partial class test1
     {
         /// <inheritdoc />
