@@ -129,7 +129,7 @@ namespace HRMS_FieldForce.Controllers
             {
                 int value = int.Parse(ExtractNumerics(lastUser.UserId));
                 value++;
-                string nextUserID = $"FF{value}";
+                string nextUserID = $"FF{value:D2}";
                 return nextUserID;
             }
             else
