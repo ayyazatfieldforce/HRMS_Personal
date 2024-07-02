@@ -18,7 +18,7 @@ public class User
     public required string LastName { get; set; }
 
     [Required]
-    public DateTime DateOfBirth { get; set; }
+    public required string DateOfBirth { get; set; }
 
     [Required]
     public required string Role { get; set; }

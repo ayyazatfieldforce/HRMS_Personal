@@ -17,11 +17,11 @@ public class UserAttendance
 
     [Key, Column(Order = 1)]
     [Required]
-    public string day { get; set; } = DateTime.Now.DayOfWeek.ToString();
+    public string day { get; set; }
 
     [Required]
-    public DateTime checkIn { get; set; }
+    public string checkIn { get; set; }
 
     [Required]
-    public DateTime checkOut { get; set; }
+    public string checkOut { get; set; }
 }

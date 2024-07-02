@@ -2,6 +2,7 @@
 using HRMS_FieldForce.Models;
 using HRMS_FieldForce.Models.DBcontext;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpPost]
         [Authorize(Roles = "User")]
+        [EnableCors("AllowOrigin")]
         public async Task<ActionResult<UserPersonalDetail>> PostUserPersonalDetail(UserPersonalDetailDTO request)
         {
             string id = GetCurrentUserID().UserID;
@@ -55,6 +57,7 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpGet]
         [Authorize(Roles = "User")]
+        [EnableCors("AllowOrigin")]
         public async Task<ActionResult<UserPersonalDetail>> GetUserPersonalDetails()
         {
             string id = GetCurrentUserID().UserID;
@@ -79,6 +82,7 @@ namespace HRMS_FieldForce.Controllers
 
         [HttpPut]
         [Authorize(Roles = "User")]
+        [EnableCors("AllowOrigin")]
         public async Task<ActionResult<UserPersonalDetail>> PutUserPersonalDetail(UserPersonalDetailDTO request)
         {
             string id = GetCurrentUserID().UserID;

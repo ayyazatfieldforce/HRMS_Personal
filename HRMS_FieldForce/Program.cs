@@ -34,7 +34,11 @@ builder.Services.AddSwaggerGen();
 
 //Starting
 var connectionString = builder.Configuration.GetConnectionString("DevConnection");
-builder.Services.AddDbContext<UserDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddDbContext<UserDBContext>(options =>
+{
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 //Add Identity & JWT authentication
 ////Identity

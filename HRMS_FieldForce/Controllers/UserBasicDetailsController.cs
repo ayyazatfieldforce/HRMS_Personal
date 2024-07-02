@@ -26,14 +26,14 @@ namespace HRMS_FieldForce.Controllers
         [Authorize(Roles = "User")]
         public async Task<ActionResult<UserBasicDetails>> GetUserDetails()
         {
-            //string id = GetCurrentUser().UserID;
-            //var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
-            //if (userDetail is null)
-            //{
-            //    return NotFound($"UserPersonalDetail with UserId {id} not found.");
-            //}
-            //return Ok(userDetail);
-            return Ok(await _UserDBContext.UserBasicDetails.ToListAsync());
+            string id = GetCurrentUser().UserID;
+            var userDetail = await _UserDBContext.UserBasicDetails.FindAsync(id);
+            if (userDetail is null)
+            {
+                return NotFound($"UserPersonalDetail with UserId {id} not found.");
+            }
+            return Ok(userDetail);
+            //return Ok(await _UserDBContext.UserBasicDetails.ToListAsync());
         }
 
 
